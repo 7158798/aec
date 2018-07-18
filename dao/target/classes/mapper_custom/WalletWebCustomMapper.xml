@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.WalletWebCustomMapper">
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.po.web.WalletRecordPo">
+        <id column="root_id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="_type" property="type" jdbcType="INTEGER"/>
+        <result column="descri" property="tradeRemark" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="r_name" property="rName" jdbcType="VARCHAR"/>
+        <result column="r_phone" property="rPhone" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="LogResultMap" type="com.hengxunda.dao.po.web.WalletLog">
+        <id column="root_id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="_type" property="type" jdbcType="INTEGER"/>
+        <result column="_status" property="status" jdbcType="INTEGER"/>
+        <result column="descri" property="remark" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="ExchangeLogResultMap" type="com.hengxunda.dao.po.web.WalletExchangePo">
+        <id column="root_id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="_type" property="type" jdbcType="VARCHAR"/>
+        <result column="number" property="number" jdbcType="DECIMAL"/>
+        <result column="rate" property="rate" jdbcType="DECIMAL"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="DialCoinLogResultMap" type="com.hengxunda.dao.po.web.DialCoinPo">
+        <id column="root_id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="_type" property="type" jdbcType="INTEGER"/>
+        <result column="_status" property="status" jdbcType="INTEGER"/>
+        <result column="coin" property="coin" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="WalletTotalInfoMap" type="com.hengxunda.dao.po.web.WalletTotalInfoPo">
+
+        <result column="_date" property="date" jdbcType="VARCHAR"/>
+
+        <result column="wallet_balance_aec" property="walletBalanceAEC" jdbcType="DECIMAL"/>
+        <result column="wallet_frozen_blance_aec" property="walletFrozenBlanceAEC" jdbcType="DECIMAL"/>
+        <result column="wallet_total_aec" property="walletTotalAEC" jdbcType="DECIMAL"/>
+
+        <result column="wallet_balance_msc" property="walletBalanceMSC" jdbcType="DECIMAL"/>
+        <result column="wallet_frozen_blance_msc" property="walletFrozenBlanceMSC" jdbcType="DECIMAL"/>
+        <result column="wallet_total_msc" property="walletTotalMSC" jdbcType="DECIMAL"/>
+
+        <result column="wallet_balance_ltc" property="walletBalanceLTC" jdbcType="DECIMAL"/>
+        <result column="wallet_frozen_balance_ltc" property="walletFrozenBlanceLTC" jdbcType="DECIMAL"/>
+        <result column="wallet_total_ltc" property="walletTotalLTC" jdbcType="DECIMAL"/>
+
+        <result column="wallet_balance_btc" property="walletBalanceBTC" jdbcType="DECIMAL"/>
+        <result column="wallet_frozen_balance_btc" property="walletFrozenBlanceBTC" jdbcType="DECIMAL"/>
+        <result column="wallet_total_btc" property="walletTotalBTC" jdbcType="DECIMAL"/>
+
+        <result column="btc_total" property="serverTotalBTC" jdbcType="DOUBLE"/>
+        <result column="ltc_total" property="serverTotalLTC" jdbcType="DOUBLE"/>
+
+    </resultMap>
+
+    <select id="getWalletTotalInfo" resultMap="WalletTotalInfoMap" parameterType="com.hengxunda.common.utils.Page">
+        (select
+        a.wallet_balance_aec, a.wallet_frozen_blance_aec, a.wallet_total_aec,
+        b.wallet_balance_msc, b.wallet_frozen_blance_msc, b.wallet_total_msc,
+        c.wallet_balance_ltc, c.wallet_frozen_balance_ltc, c.wallet_total_ltc,
+        d.wallet_balance_btc, d.wallet_frozen_balance_btc, d.wallet_total_btc,
+        0 btc_total, 0 ltc_total,
+        DATE_FORMAT(now(), "%Y-%m-%d") _date
+        from
+        (select sum(balance) wallet_balance_aec, sum(frozen_blance) wallet_frozen_blance_aec, sum(balance + frozen_blance) wallet_total_aec, 0 _type from t_wallet_info where type = 'AEC' ) a left join
+        (select sum(balance) wallet_balance_msc, sum(frozen_blance) wallet_frozen_blance_msc, sum(balance + frozen_blance) wallet_total_msc, 0 _type from t_wallet_info where type = 'MSC' ) b on a._type = b._type left join
+        (select sum(balance) wallet_balance_ltc, sum(frozen_blance) wallet_frozen_balance_ltc, sum(balance + frozen_blance) wallet_total_ltc, 0 _type from t_wallet_info where type = 'LTC' ) c on a._type = c._type left join
+        (select sum(balance) wallet_balance_btc, sum(frozen_blance) wallet_frozen_balance_btc, sum(balance + frozen_blance) wallet_total_btc, 0 _type from t_wallet_info where type = 'BTC' ) d on a._type = d._type)
+        union all
+        (select
+        wallet_balance_aec, wallet_frozen_blance_aec, wallet_total_aec,
+        wallet_balance_msc, wallet_frozen_blance_msc, wallet_total_msc,
+        wallet_balance_ltc, wallet_frozen_balance_ltc, wallet_total_ltc,
+        wallet_balance_btc, wallet_frozen_balance_btc, wallet_total_btc,
+        btc_total, ltc_total,
+        DATE_FORMAT(create_time, "%Y-%m-%d") _date
+        from t_wallet_system )
+        order by _date desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+    <select id="countWalletTotalInfo" resultType="java.lang.Integer">
+        select
+        count(0)+1
+        from
+        t_wallet_system
+    </select>
+    <select id="getDialCoinLogs" resultMap="DialCoinLogResultMap" parameterType="map">
+        select
+        a.root_id, a.order_no, b.name, b.phone, a._status, a.operate _type, a.coin, a.amount, a.create_time
+        from
+        (
+        select
+        a.id root_id, a.to_id user_id, '000' order_no,
+        case when b.id is not null then 1 else 0 end _status,
+        left(a.transaction_pair,3) coin, a.to_amount amount,
+        a.operate, a.create_time
+        from t_wallet_record a left join t_msc_record b on a.source = b.id where operate in (0, 10, 12, 13 ,15)
+        ) a left join t_user b on a.user_id = b.id
+        where
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a.operate = #{record.type,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.status != 100">
+            a._status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.coin != null">
+            a.coin = #{record.coin,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.createTime != null">
+            DATE_FORMAT( a.create_time, "%Y-%m-%d") =DATE_FORMAT( #{record.createTime,jdbcType=TIMESTAMP}, "%Y-%m-%d")  and
+        </if>
+        1=1
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+  </select>
+
+    <select id="countDialCoinLogs" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.DialCoinPo">
+        select
+        count(0)
+        from
+        (
+        select
+        a.id root_id, a.to_id user_id, '000' order_no,
+        case when  b.id is not null then 1 else 0 end _status,
+        left(a.transaction_pair,3) coin, a.to_amount amount,
+        a.descri, a.create_time
+        from t_wallet_record a left join t_msc_record b on a.source = b.id where operate in (0, 10, 12, 13 ,15)
+        ) a left join t_user b on a.user_id = b.id
+        where
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a.operate = #{record.type,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.status != 100">
+            <if test="record.status = 1">
+                b.id is not null and
+            </if>
+            <if test="record.status = 0">
+                b.id is null and
+            </if>
+
+        </if>
+        <if test="record.coin != null">
+            a.coin = #{record.coin,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.createTime != null">
+            DATE_FORMAT( a.create_time, "%Y-%m-%d") =DATE_FORMAT( #{record.createTime,jdbcType=TIMESTAMP}, "%Y-%m-%d")  and
+        </if>
+        1=1
+    </select>
+
+    <select id="getExchangeLogs" resultMap="ExchangeLogResultMap" parameterType="map">
+        select
+         a.root_id, '000' order_no, b.name, b.phone,
+            case
+            when a._type = 0 then concat(substring_index(a.pair,'/', 1),'转',substring_index(a.pair,'/', -1))
+            when a._type = 1 then concat(substring_index(a.pair,'/', -1),'转',substring_index(a.pair,'/', 1))
+            end _type,
+         a.number, a.rate, a.amount, a.create_time
+         from
+         (
+         /*select id root_id, to_id id, 0 _type, transaction_pair pair, to_amount number, to_amount/from_amount rate, from_amount amount, source, create_time from  t_wallet_record where operate = 5
+         union all*/
+         select id root_id, from_id id, 1 _type, transaction_pair pair, from_amount number, from_amount/to_amount rate, to_amount amount, source, create_time from  t_wallet_record where operate = 5
+         ) a left join t_user b on a.id = b.id left join t_order c on a.source = c.id
+         where
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != null">
+            case
+            when a._type = 0 then concat(substring_index(a.pair,'/', 1),'转',substring_index(a.pair,'/', -1))
+            when a._type = 1 then concat(substring_index(a.pair,'/', -1),'转',substring_index(a.pair,'/', 1))
+            end
+            = #{record.type,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.createTime != null">
+            DATE_FORMAT( a.create_time, "%Y-%m-%d") =DATE_FORMAT( #{record.createTime,jdbcType=TIMESTAMP}, "%Y-%m-%d")  and
+        </if>
+        1=1
+         order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+    <select id="countExchangeLogs" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.WalletExchangePo">
+        select
+        count(0)
+        from
+        (
+        select id root_id, to_id id, 0 _type, transaction_pair pair, to_amount number, to_amount/from_amount rate, from_amount amount, source, create_time from  t_wallet_record where operate = 5
+        union all
+        select id root_id, from_id id, 1 _type, transaction_pair pair, from_amount number, from_amount/to_amount rate, to_amount amount, source, create_time from  t_wallet_record where operate = 5
+        ) a left join t_user b on a.id = b.id left join t_order c on a.source = c.id
+        where
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != null">
+            case
+            when a._type = 0 then concat(substring_index(a.pair,'/', 1),'转',substring_index(a.pair,'/', -1))
+            when a._type = 1 then concat(substring_index(a.pair,'/', -1),'转',substring_index(a.pair,'/', 1))
+            end
+            = #{record.type,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.createTime != null">
+            DATE_FORMAT( a.create_time, "%Y-%m-%d") =DATE_FORMAT( #{record.createTime,jdbcType=TIMESTAMP}, "%Y-%m-%d")  and
+        </if>
+        1=1
+    </select>
+    <select id="getRechargeLogs" resultMap="LogResultMap" parameterType="map">
+        select
+         a.root_id, c.order_no, b.name, b.phone, a._type, a._status, a.amount, a.address, a.create_time, a.descri
+         from
+         (
+         select id root_id,  1 _type, from_amount amount, from_address address, 0 _status, source, create_time, descri from  t_wallet_record
+        where
+        <if test="record.coinName != null">
+            transaction_pair like #{record.coinName} and
+        </if>
+        operate = 2
+         union all
+         select id root_id, 0 _type, to_amount amount, to_address address, 1 _status, source, create_time, descri from  t_wallet_record
+        where
+        <if test="record.coinName != null">
+            transaction_pair like #{record.coinName} and
+        </if>
+        operate = 1
+        union all
+        select id root_id,  0 _type, to_amount amount, to_address address, 0 _status, source, create_time, descri from  t_wallet_record
+        where
+        <if test="record.coinName != null">
+            transaction_pair like #{record.coinName} and
+        </if>
+        operate = 2
+         ) a
+         left join t_wallet_info w on a.address = w.address and w.type = 'AEC' left join t_user b on w.user_id = b.id
+         left join t_order c on a.source = c.id
+        where
+        <if test="record.orderNo != null">
+            d.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            b.name= #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a._type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100">
+            a._status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.remark != null">
+            a.descri = #{record.remark,jdbcType=INTEGER} and
+        </if>
+        <if test="record.createTime != null">
+            DATE_FORMAT( a.create_time, "%Y-%m-%d") =DATE_FORMAT( #{record.createTime,jdbcType=TIMESTAMP}, "%Y-%m-%d")  and
+        </if>
+        1=1
+         order by a.create_time desc
+         limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+    <select id="countRechargeLogs" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.WalletLog">
+        select
+        count(0)
+        from
+        (
+        select id root_id,  1 _type, from_amount amount, from_address address, 0 _status, source, create_time, descri from  t_wallet_record
+        where
+        <if test="record.coinName != null">
+            transaction_pair like #{record.coinName} and
+        </if>
+        operate = 2
+        union all
+        select id root_id, 0 _type, to_amount amount, to_address address, 1 _status, source, create_time, descri from  t_wallet_record
+        where
+        <if test="record.coinName != null">
+            transaction_pair like #{record.coinName} and
+        </if>
+        operate = 1
+        ) a
+        left join t_wallet_info w on a.address = w.address and w.type = 'AEC' left join t_user b on w.user_id = b.id
+        left join t_order c on a.source = c.id
+        where
+        <if test="record.orderNo != null">
+            d.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            b.name= #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a._type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100">
+            a._status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.remark != null">
+            a.descri = #{record.remark,jdbcType=INTEGER} and
+        </if>
+        <if test="record.createTime != null">
+            DATE_FORMAT( a.create_time, "%Y-%m-%d") =DATE_FORMAT( #{record.createTime,jdbcType=TIMESTAMP}, "%Y-%m-%d")  and
+        </if>
+        1=1
+
+    </select>
+    <select id="getWalletRecords" resultMap="BaseResultMap" parameterType="map">
+        select
+        a.root_id,
+        case when d.order_no is not null then d.order_no else 'system' end order_no,
+        case when b.name is not null then b.name else 'system' end name,
+        case when b.phone is not null then b.phone else 'system' end phone,
+        a._type, a.descri, a.amount,
+        case when c.name is not null then c.name else 'system' end r_name,
+        case when c.phone is not null then c.phone else 'system' end r_phone,
+        a.create_time
+        from
+        (
+        select id root_id, from_id id , 0 _type, source, create_time, descri, to_amount amount, to_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',-1) like #{record.coinName} and
+        </if>
+        from_id is not null and operate not in (11, 15,17)
+        union all
+        select id root_id, to_id id , 1 _type, source, create_time, descri, to_amount amount, from_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',1) like #{record.coinName} and
+        </if>
+        to_id is not null and operate not in (11,15, 17)
+        union all
+        select id root_id, to_id id , 1 _type, source, create_time, descri, to_amount amount, from_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',1) like #{record.coinName} and
+        </if>
+        to_id is not null and operate <![CDATA[ = ]]> 11
+        union all
+        select id root_id, to_id id , 0 _type, source, create_time, descri, to_amount amount, from_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',1) like #{record.coinName} and
+        </if>
+        to_id is not null and operate <![CDATA[ = ]]> 15
+        union all
+        select id root_id, from_id id , 0 _type, source, create_time, descri, to_amount amount, to_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',-1) like #{record.coinName} and
+        </if>
+        from_id is not null and operate <![CDATA[ = ]]> 17
+
+        ) a
+        left join t_user b on a.id = b.id left join t_user c on a.rid = c.id left join t_order d on a.source = d.id
+        where
+        <if test="record.orderNo != null">
+            d.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a._type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.tradeRemark != null">
+            a.descri = #{record.tradeRemark,jdbcType=INTEGER} and
+        </if>
+        <if test="record.createTime != null">
+            DATE_FORMAT( a.create_time, "%Y-%m-%d") =DATE_FORMAT( #{record.createTime,jdbcType=TIMESTAMP}, "%Y-%m-%d")  and
+        </if>
+        1=1
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+    <select id="countWalletRecords" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.WalletRecordPo">
+        select
+        count(0)
+        from
+        (
+        select id root_id, from_id id , 0 _type, source, create_time, descri, to_amount amount, to_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',-1) like #{record.coinName} and
+        </if>
+        from_id is not null and operate not in (11, 17)
+        union all
+        select id root_id, to_id id , 1 _type, source, create_time, descri, to_amount amount, from_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',1) like #{record.coinName} and
+        </if>
+        to_id is not null and operate not in (11, 17)
+        union all
+        select id root_id, to_id id , 1 _type, source, create_time, descri, to_amount amount, from_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',1) like #{record.coinName} and
+        </if>
+        to_id is not null and operate <![CDATA[ = ]]> 11
+        union all
+        select id root_id, from_id id , 0 _type, source, create_time, descri, to_amount amount, to_id rid from t_wallet_record
+        where
+        <if test="record.coinName != null">
+            substring_index(transaction_pair,'/',-1) like #{record.coinName} and
+        </if>
+        from_id is not null and operate <![CDATA[ = ]]> 17
+        ) a
+        left join t_user b on a.id = b.id left join t_user c on a.rid = c.id left join t_order d on a.source = d.id
+        where
+        <if test="record.orderNo != null">
+            d.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a._type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.tradeRemark != null">
+            a.descri = #{record.tradeRemark,jdbcType=INTEGER} and
+        </if>
+        <if test="record.createTime != null">
+            DATE_FORMAT( a.create_time, "%Y-%m-%d") =DATE_FORMAT( #{record.createTime,jdbcType=TIMESTAMP}, "%Y-%m-%d")  and
+        </if>
+        1=1
+    </select>
+
+
+
+</mapper>

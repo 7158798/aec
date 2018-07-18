@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.WalletRecordCustomMapper">
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.WalletRecord">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="transaction_pair" property="transactionPair" jdbcType="VARCHAR"/>
+        <result column="from_id" property="fromId" jdbcType="VARCHAR"/>
+        <result column="to_id" property="toId" jdbcType="VARCHAR"/>
+        <result column="from_address" property="fromAddress" jdbcType="VARCHAR"/>
+        <result column="to_address" property="toAddress" jdbcType="VARCHAR"/>
+        <result column="from_amount" property="fromAmount" jdbcType="DECIMAL"/>
+        <result column="to_amount" property="toAmount" jdbcType="DECIMAL"/>
+        <result column="fee" property="fee" jdbcType="DECIMAL"/>
+        <result column="rate" property="rate" jdbcType="VARCHAR"/>
+        <result column="operate" property="operate" jdbcType="INTEGER"/>
+        <result column="descri" property="descri" jdbcType="VARCHAR"/>
+        <result column="source" property="source" jdbcType="VARCHAR"/>
+        <result column="trans_type" property="transType" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="getByUserId" resultType="com.hengxunda.dao.po.app.WalletRecordPo" parameterType="string">
+        SELECT twr.id AS id, substring_index(twr.transaction_pair, '/', -1) AS type
+        , substring_index(twr.transaction_pair, '/', 1) AS receiptCurrency
+        , 0 + CAST(-twr.from_amount AS CHAR) AS amount,twr.create_time AS createTime, 0 + CAST(twr.fee AS CHAR) AS fee
+        , CASE
+        WHEN twr.operate in (2,3) THEN '提币'
+        WHEN twr.operate in (4,20) THEN '卖币'
+        WHEN twr.operate = 5 THEN '换币'
+        WHEN twr.operate = 14 THEN '付款'
+        WHEN twr.operate = 16 THEN '保证金转余额'
+        WHEN twr.operate = 17 THEN '余额转保证金'
+        ELSE '其他'
+        END AS operate,twr.transaction_pair as pair,0 + CAST(twr.to_amount AS CHAR) AS receiveAmount,twr.to_address as address,0 as flag
+        FROM t_wallet_record twr
+        WHERE twr.from_id = #{userId} and twr.operate in(2,3,4,5,14,16,17,20)
+        UNION
+        SELECT twrt.id AS id, substring_index(twrt.transaction_pair, '/', 1) AS type
+        , substring_index(twrt.transaction_pair, '/', -1) AS receiptCurrency
+        , 0 + CAST(twrt.to_amount AS CHAR) AS amount, twrt.create_time AS createTime, 0 + CAST(twrt.fee AS CHAR) AS fee
+        , CASE
+        WHEN twrt.operate = 1 THEN '充币'
+        WHEN twrt.operate in (2,3) THEN '收币'
+        WHEN twrt.operate in (4,20) THEN '买币'
+        WHEN twrt.operate = 5 THEN '换币'
+        WHEN twrt.operate in (0,10,12,13) THEN '平台收益'
+        WHEN twrt.operate = 14 THEN '收款'
+        WHEN twrt.operate = 15 THEN '平台调整'
+        WHEN twrt.operate = 16 THEN '保证金转余额'
+        WHEN twrt.operate = 17 THEN '余额转保证金'
+        ELSE '其他'
+        END AS operate,twrt.transaction_pair as pair,0 + CAST(-twrt.from_amount AS CHAR) AS receiveAmount,twrt.from_address as address,1 as flag
+        FROM  t_wallet_record twrt
+        WHERE twrt.to_id = #{userId} and twrt.operate in(0,1,2,3,4,5,10,12,13,14,15,16,17,20)
+        UNION
+        SELECT DISTINCT twrt.id AS id, substring_index(twrt.transaction_pair, '/', 1) AS type
+        , substring_index(twrt.transaction_pair, '/', -1) AS receiptCurrency
+        , 0 + CAST(twrt.to_amount AS CHAR) AS amount, twrt.create_time AS createTime, 0 + CAST(twrt.fee AS CHAR) AS fee
+        , CASE
+        WHEN twrt.operate = 1 THEN '充币'
+        ELSE '其他'
+        END AS operate,twrt.transaction_pair as pair,0 + CAST(-twrt.from_amount AS CHAR) AS receiveAmount,twrt.from_address as address,1 as flag
+        FROM  t_wallet_record twrt
+        LEFT JOIN t_wallet_info u ON  u.address = twrt.to_address
+        WHERE u.user_id = #{userId} and twrt.operate =1 and twrt.transaction_pair in ('AEC/AEC','MSC/MSC') and u.type in ('AEC','MSC')
+        ORDER BY createTime DESC
+        <if test="pageNo != null and pageSize != null">
+            LIMIT #{pageNo}, #{pageSize}
+        </if>
+    </select>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        <foreach collection="list" separator=";" item="item">
+            insert into t_wallet_record (
+            id,
+            transaction_pair,
+            from_id,
+            to_id,
+            from_address,
+            to_address,
+            from_amount,
+            to_amount,
+            fee,
+            rate,
+            operate,
+            descri,
+            source,
+            trans_type,
+            create_time,
+            update_user,
+            update_time
+            )
+            values (
+            #{item.id,jdbcType=VARCHAR},
+            #{item.transactionPair,jdbcType=VARCHAR},
+            #{item.fromId,jdbcType=VARCHAR},
+            #{item.toId,jdbcType=VARCHAR},
+            #{item.fromAddress,jdbcType=VARCHAR},
+            #{item.toAddress,jdbcType=VARCHAR},
+            #{item.fromAmount,jdbcType=DECIMAL},
+            #{item.toAmount,jdbcType=DECIMAL},
+            #{item.fee,jdbcType=DECIMAL},
+            #{item.rate,jdbcType=VARCHAR},
+            #{item.operate,jdbcType=INTEGER},
+            #{item.descri,jdbcType=VARCHAR},
+            #{item.source,jdbcType=VARCHAR},
+            #{item.transType,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateUser,jdbcType=VARCHAR},
+            #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="getWalletRecordBySourceAndOperate" resultMap="BaseResultMap">
+        SELECT
+            *
+        FROM
+            t_wallet_record twr
+        WHERE
+            twr.source = #{source} and twr.operate = #{operate}
+    </select>
+
+    <select id="getWalletRecordBySource" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        t_wallet_record twr
+        WHERE
+        twr.source = #{source}
+    </select>
+
+    <select id="getByOperate" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        t_wallet_record
+        <where>
+            <if test="fromId != null">
+                AND from_id = #{fromId,jdbcType=VARCHAR}
+            </if>
+            <if test="toId != null">
+                AND to_id = #{toId,jdbcType=VARCHAR}
+            </if>
+            <if test="operate != null">
+                AND operate = #{operate,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+</mapper>

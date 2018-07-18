@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.YinshangIsPayCustomMapper">
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.YinshangIsPay">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="CNY" property="cny" jdbcType="INTEGER"/>
+        <result column="USD" property="usd" jdbcType="INTEGER"/>
+        <result column="EUR" property="eur" jdbcType="INTEGER"/>
+        <result column="HKD" property="hkd" jdbcType="INTEGER"/>
+        <result column="Alipay" property="alipay" jdbcType="INTEGER"/>
+        <result column="PayPal" property="paypal" jdbcType="INTEGER"/>
+        <result column="Xilian" property="xilian" jdbcType="INTEGER"/>
+        <result column="SWIFT" property="swift" jdbcType="INTEGER"/>
+        <result column="Weixin" property="weixin" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="upate_user" property="upateUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="selectByUserId" resultMap="BaseResultMap">
+     select * from t_yinshang_is_pay where user_id=#{userId}
+  </select>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.GlobalParameterCustomMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.GlobalParameter" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="cron_key" property="cronKey" jdbcType="VARCHAR" />
+    <result column="cron_value" property="cronValue" jdbcType="VARCHAR" />
+    <result column="min_value" property="minValue" jdbcType="VARCHAR" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="descri" property="descri" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, cron_key, cron_value, min_value, group_name, descri, create_user, create_time, 
+    update_user, update_time
+  </sql>
+
+  <select id="selectByCronKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_global_parameter
+    where cron_key = #{key,jdbcType=VARCHAR}
+  </select>
+
+  <update id="updateCronValueByCronKey" >
+    update
+    t_global_parameter
+    set cron_value = #{value, jdbcType=VARCHAR}
+    where cron_key = #{key, jdbcType=VARCHAR}
+    and cron_value <![CDATA[ != ]]> #{value, jdbcType=VARCHAR}
+  </update>
+
+</mapper>

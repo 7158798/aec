@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.MscRecordCustomMapper" >
+  <sql id="Base_Column_List" >
+    id, user_id, wallet_record_id, aec_amount, msc_amount, rest_msc_amount, status, create_time, 
+    update_time, update_user
+  </sql>
+  <select id="sumAllUserMsc" resultType="java.math.BigDecimal">
+    SELECT
+      SUM(t.msc_amount)
+    FROM
+      t_msc_record t
+  </select>
+  <select id="queryUserMsc" resultType="com.hengxunda.dao.entity.MscRecord">
+    SELECT
+      t.user_id AS userId,
+      SUM(t.msc_amount) AS mscAmount
+    FROM
+      t_msc_record t
+    GROUP BY
+      t.user_id
+  </select>
+  <select id="sumAchievementByUserIdExcludeByMscId" resultType="com.hengxunda.dao.po.general.UserMscAmountPo">
+    SELECT
+      tu.id AS 'userId',
+      tu.name AS 'userName',
+      tu.nick_name AS 'nickName',
+      IFNULL(SUM(tmr.aec_amount),0) AS 'amount'
+    FROM
+      t_user tu
+    LEFT JOIN t_msc_record tmr ON tu.id = tmr.user_id
+    WHERE
+      tu.id = #{userId} AND tmr.id &lt;&gt; #{mscRecordId}
+  </select>
+  <select id="sumAchievementByUserId" resultType="com.hengxunda.dao.po.general.UserMscAmountPo">
+    SELECT
+    tu.id AS 'userId',
+    tu.name AS 'userName',
+    tu.nick_name AS 'nickName',
+    IFNULL(SUM(tmr.aec_amount),0) AS 'amount'
+    FROM
+    t_user tu
+    LEFT JOIN t_msc_record tmr ON tu.id = tmr.user_id
+    WHERE
+    tu.id = #{userId}
+  </select>
+  <select id="sumChildAchievementByUserIdExcludeByMscId" resultType="com.hengxunda.dao.po.general.UserMscAmountPo">
+    SELECT
+      tu.id AS 'userId',
+      tu.name AS 'userName',
+      tu.nick_name AS 'nickName',
+      IFNULL(SUM(tmr.aec_amount),0) AS 'amount'
+    FROM
+     t_user tu
+    LEFT JOIN t_user_recommend tur ON tu.id = tur.referee_id
+    LEFT JOIN t_msc_record tmr ON tu.id = tmr.user_id
+    WHERE
+      tur.recommend_id = #{userId} AND tmr.id &lt;&gt; #{mscRecordId}
+    GROUP BY tu.id
+  </select>
+  <select id="sumChildAchievementByUserId" resultType="com.hengxunda.dao.po.general.UserMscAmountPo">
+    SELECT
+    tu.id AS 'userId',
+    tu.name AS 'userName',
+    tu.nick_name AS 'nickName',
+    IFNULL(SUM(tmr.aec_amount),0) AS 'amount'
+    FROM
+    t_user tu
+    LEFT JOIN t_user_recommend tur ON tu.id = tur.referee_id
+    LEFT JOIN t_msc_record tmr ON tu.id = tmr.user_id
+    WHERE
+    tur.recommend_id = #{userId}
+    GROUP BY tu.id
+  </select>
+
+  <select id="sumAchievementForSelfAndParents" resultType="com.hengxunda.dao.po.general.UserMscAmountPo" parameterType="java.util.List">
+    SELECT
+      tu.id AS 'userId',
+      tu.name AS 'userName',
+      tu.nick_name AS 'nickName',
+      IFNULL(SUM(tmr.aec_amount),0) AS 'amount'
+    FROM
+      t_user tu
+    LEFT JOIN t_msc_record tmr ON tu.id = tmr.user_id
+    WHERE
+      tu.id  IN
+      <foreach collection="list" item="item" open="(" separator="," close=")">
+        #{item.id}
+      </foreach>
+    GROUP BY tu.id
+  </select>
+  
+  <select id="countQualifiedNum" resultType="java.lang.Integer">
+    SELECT count(1) FROM
+      (
+        SELECT
+          t.user_id AS userId,
+          sum(t.aec_amount) AS sumAec
+          FROM
+          t_msc_record t
+        WHERE t.user_id IN
+        (
+          SELECT tur.referee_id
+          FROM t_user_recommend tur
+          WHERE tur.recommend_id =#{userId}
+          <!--UNION SELECT #{userId} FROM DUAL-->
+        )
+        GROUP BY
+        t.user_id
+      ) AS temp
+    WHERE temp.sumAec &gt;= #{qualifiedNum}
+  </select>
+
+  <insert id="batchInsert">
+    <foreach collection="list" separator=";" item="item">
+      insert into t_msc_record (
+        id,
+        user_id,
+        wallet_record_id,
+        aec_amount,
+        msc_amount,
+        rest_msc_amount,
+        status,
+        type,
+        create_time
+      )
+      values (
+        #{item.id,jdbcType=VARCHAR},
+        #{item.userId,jdbcType=VARCHAR},
+        #{item.walletRecordId,jdbcType=VARCHAR},
+        #{item.aecAmount,jdbcType=DECIMAL},
+        #{item.mscAmount,jdbcType=DECIMAL},
+        #{item.restMscAmount,jdbcType=DECIMAL},
+        #{item.status,jdbcType=INTEGER},
+        #{item.type,jdbcType=INTEGER},
+        #{item.createTime,jdbcType=TIMESTAMP}
+      )
+    </foreach>
+  </insert>
+
+  <update id="batchUpdateRestAmount" parameterType="java.util.List">
+    <foreach collection="list" item="item" separator=";">
+      update t_msc_record
+      set rest_msc_amount = #{item.restMscAmount},
+        <if test="item.status != null">
+          status = #{item.status},
+        </if>
+        update_time = #{item.updateTime},
+        update_user = #{item.updateUser}
+      where id = #{item.id}
+    </foreach>
+  </update>
+  
+  <select id="sumBuyMscAmount" resultType="java.math.BigDecimal">
+    SELECT
+      SUM(tmr.msc_amount)
+    FROM
+      t_msc_record tmr
+    WHERE
+      tmr.type = 1 AND tmr.effect_status=0
+  </select>
+</mapper>

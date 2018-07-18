@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.MscProfitsCustomMapper" >
+
+  <select id="queryAllMscProfits" resultType="com.hengxunda.dao.po.web.MscProfitsPo">
+    SELECT
+      id,
+      amount,
+      status,
+      descri,
+      create_user AS  'createUser',
+      create_time AS 'createTime',
+      update_user AS 'updateUser',
+      update_time AS 'updateTime'
+    FROM t_msc_profits
+  </select>
+</mapper>

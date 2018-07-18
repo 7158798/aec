@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.MerchantApplyMapper">
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.po.web.MerchantApplyPo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="data_flag_status" property="dataFlagStatus" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="bond" property="bond" jdbcType="DECIMAL"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="uid" property="uid" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    b.id, b.user_id, b.status, b.reason,b.data_flag_status, b.create_time, b.update_user, b.update_time, a.phone,
+     a.name,a.uid, c.bond
+  </sql>
+    <select id="getMerchantApplysSelect" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user a right join t_yinshang_apply b on a.id = b.user_id
+        left join t_wallet_info c on c.user_id = b.user_id and c.type = 'AEC'
+        where
+        <if test="record.id != null">
+            b.id = #{record.id, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.uid != null">
+            a.uid = #{record.uid, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            a.phone = #{record.phone, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            a.name = #{record.name, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.status != 100">
+            b.status = #{record.status, jdbcType=VARCHAR} and
+        </if>
+        1=1
+        order by b.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+
+    <select id="downloadApplys" resultMap="BaseResultMap" parameterType="com.hengxunda.dao.po.web.MerchantApplyPo">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user a right join t_yinshang_apply b on a.id = b.user_id
+        left join t_wallet_info c on c.user_id = b.user_id and c.type = 'AEC'
+        where
+        <if test="record.id != null">
+            b.id = #{record.id, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.uid != null">
+            a.uid = #{record.uid, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            a.phone = #{record.phone, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            a.name = #{record.name, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.status != 100">
+            b.status = #{record.status, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            b.create_time between #{record.beginTime, jdbcType=TIMESTAMP} and
+            #{record.endTime, jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by b.create_time desc
+    </select>
+
+    <select id="countMerchantApply" resultType="java.lang.Integer"
+            parameterType="com.hengxunda.dao.po.web.MerchantApplyPo">
+        select
+        count(0)
+        from t_user a right join t_yinshang_apply b on a.id = b.user_id
+        left join t_wallet_info c on c.user_id = b.user_id and c.type = 'AEC'
+        where
+        <if test="record.id != null">
+            b.id = #{record.id, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.uid != null">
+            a.uid = #{record.uid, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            a.phone = #{record.phone, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            a.name = #{record.name, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.status != 100">
+            b.status = #{record.status, jdbcType=VARCHAR} and
+        </if>
+        1=1
+    </select>
+
+    <update id="reviewMerchantApply">
+        update t_yinshang_apply set status = #{status,jdbcType=INTEGER}
+        <if test="status == 1">
+            ,data_flag_status = 1
+        </if>
+        where user_id = #{userId,jdbcType=VARCHAR} and status = 0 and data_flag_status = 0
+    </update>
+
+
+    <select id="getYsApplyByUserId" resultMap="BaseResultMap">
+    select * from t_yinshang_apply tya where tya.user_id = #{userId} order by tya.create_time desc limit 1
+  </select>
+</mapper>

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.OrderAppealCustomMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.OrderAppeal">
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="appeal_id" property="appealId" jdbcType="VARCHAR" />
+    <result column="appeal_content" property="appealContent" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="img" property="img" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+    <resultMap id="Base_Result_Map_Web" type="com.hengxunda.dao.po.web.OrderAppealPo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_id" property="orderId" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="buy_phone" property="buyPhone" jdbcType="VARCHAR"/>
+        <result column="buy_name" property="buyName" jdbcType="VARCHAR"/>
+        <result column="sell_phone" property="sellPhone" jdbcType="VARCHAR"/>
+        <result column="sell_name" property="sellName" jdbcType="VARCHAR"/>
+        <result column="quantity" property="number" jdbcType="DECIMAL"/>
+        <result column="unit_price" property="price" jdbcType="DECIMAL"/>
+        <result column="money" property="amount" jdbcType="DECIMAL"/>
+        <result column="appeal_content" property="appealContent" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="img" property="img" jdbcType="VARCHAR"/>
+        <result column="role" property="role" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List_Web">
+      a.id,
+      b.id order_id, b.order_no,
+      c.name buy_name, c.phone buy_phone,
+      e.name sell_name, e.phone sell_phone,
+      b.quantity, b.unit_price, b.money,
+      a.appeal_content, a.content,
+      a.img, a.create_time,
+      f.role, b.type, a.status
+    </sql>
+    <select id="getOrdersAppeals" resultMap="Base_Result_Map_Web" parameterType="map">
+        select
+        <include refid="Base_Column_List_Web"/>
+        from t_order_appeal a
+        left join t_order b on a.order_id = b.id
+        left join t_user c on b.user_id = c.id
+        left join t_yinshang_advert d on d.id = b.advert_id
+        left join t_user e on e.id = d.create_user
+        left join t_user f on a.user_id = f.id
+        where
+        <if test="record.orderId != null">
+            b.id = #{record.orderId,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            c.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            c.name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            e.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellName != null" >
+            e.name = #{record.sellName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            b.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100" >
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.role != 100" >
+            f.role = #{record.role,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+    <select id="countOrdersAppeals" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.OrderAppealPo">
+        select
+        count(0)
+        from t_order_appeal a
+        left join t_order b on a.order_id = b.id
+        left join t_user c on b.user_id = c.id
+        left join t_yinshang_advert d on d.id = b.advert_id
+        left join t_user e on e.id = d.create_user
+        left join t_user f on a.user_id = f.id
+        where
+        <if test="record.orderId != null">
+            b.id = #{record.orderId,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            c.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            c.name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            e.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellName != null" >
+            e.name = #{record.sellName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            b.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100" >
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.role != 100" >
+            f.role = #{record.role,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time
+    </select>
+    <select id="downloadOrdersAppeals" resultMap="Base_Result_Map_Web" parameterType="com.hengxunda.dao.po.web.OrderAppealPo">
+        select
+        <include refid="Base_Column_List_Web"/>
+        from t_order_appeal a
+        left join t_order b on a.order_id = b.id
+        left join t_user c on b.user_id = c.id
+        left join t_yinshang_advert d on d.id = b.advert_id
+        left join t_user e on e.id = d.create_user
+        left join t_user f on a.user_id = f.id
+        where
+        <if test="record.orderId != null">
+            b.id = #{record.orderId,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            c.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            c.name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            e.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellName != null" >
+            e.name = #{record.sellName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            b.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100" >
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.role != 100" >
+            f.role = #{record.role,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time desc
+    </select>
+  <select id="countWinAppeal" resultType="java.lang.Integer" parameterType="string">
+          SELECT
+          count(*)
+      FROM
+          t_order_appeal a
+      JOIN t_order o ON a.order_id = o.id
+      WHERE
+          o.role = 0
+      AND a.user_id = #{userId}
+      AND (
+          (o.type = 0 AND a.`status` = 4)
+          OR (o.type = 1 AND a.`status` = 3)
+      )
+  </select>
+
+    <select id="countOrderAppealByOrderIdAndUserId" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            t_order_appeal toa
+        where toa.order_id = #{orderId} and toa.user_id = #{userId} and status in(0,1)
+    </select>
+    
+    <select id="selectOrderAppealById" resultType="com.hengxunda.dao.po.web.DealOrderAppealPo">
+        SELECT
+            a.appeal_id AS appealId,
+            o.order_no  AS orderNo,
+            a.order_id AS orderId,
+            o.user_id AS userId,
+            a.user_id AS accuseUserId,
+            o.advert_id AS advertId,
+            t.descri AS descri,
+        CASE
+           WHEN a.user_id = o.user_id THEN
+            o.adveru_user_id
+        ELSE
+            o.user_id
+        END AS accusedUserId,
+         o.type AS type,
+         o.transaction_pair AS symbol,
+         o.quantity AS amount,
+         o.money AS money,
+         a.`status` AS STATUS
+        FROM
+            t_order_appeal a
+        LEFT JOIN t_order o ON a.order_id = o.id
+        LEFT JOIN t_appeal_type t ON a.appeal_id = t.id
+        WHERE
+            a.id = #{id}
+    </select>
+
+    <update id="silverDeductCoin">
+        UPDATE t_wallet_info
+        SET bond =
+        IF (
+            balance >= #{money},
+            bond,
+            bond - (#{money} - balance)
+        ),
+         balance =
+        IF (balance >= #{money}, balance - #{money}, 0)
+        WHERE
+            user_id = #{userId}
+        AND type = #{type}
+    </update>
+
+
+    <select id="getOrderAppealByOrderIdAndUserIdAndStatus" resultMap="BaseResultMap">
+        select * from t_order_appeal where order_id = #{orderId} and user_id = #{userId} and status in (0,1)
+    </select>
+
+    <select id="getOrderAppealByOrderIdAndStatus" resultMap="BaseResultMap">
+        select * from t_order_appeal where order_id = #{orderId} and status = #{status}
+    </select>
+
+    <select id="getOrderAppealByOrderId" resultMap="BaseResultMap">
+        select * from t_order_appeal where order_id = #{orderId}
+    </select>
+</mapper>

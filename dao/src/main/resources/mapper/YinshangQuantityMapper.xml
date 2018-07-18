@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper.YinshangQuantityMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.YinshangQuantity" >
+    <id column="advert_user_id" property="advertUserId" jdbcType="VARCHAR" />
+    <result column="quantity" property="quantity" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    advert_user_id, quantity
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hengxunda.dao.entity.YinshangQuantityExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_yinshang_quantity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_yinshang_quantity
+    where advert_user_id = #{advertUserId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_yinshang_quantity
+    where advert_user_id = #{advertUserId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hengxunda.dao.entity.YinshangQuantityExample" >
+    delete from t_yinshang_quantity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hengxunda.dao.entity.YinshangQuantity" >
+    insert into t_yinshang_quantity (advert_user_id, quantity)
+    values (#{advertUserId,jdbcType=VARCHAR}, #{quantity,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hengxunda.dao.entity.YinshangQuantity" >
+    insert into t_yinshang_quantity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="advertUserId != null" >
+        advert_user_id,
+      </if>
+      <if test="quantity != null" >
+        quantity,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="advertUserId != null" >
+        #{advertUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="quantity != null" >
+        #{quantity,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hengxunda.dao.entity.YinshangQuantityExample" resultType="java.lang.Integer" >
+    select count(*) from t_yinshang_quantity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_yinshang_quantity
+    <set >
+      <if test="record.advertUserId != null" >
+        advert_user_id = #{record.advertUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.quantity != null" >
+        quantity = #{record.quantity,jdbcType=DECIMAL},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_yinshang_quantity
+    set advert_user_id = #{record.advertUserId,jdbcType=VARCHAR},
+      quantity = #{record.quantity,jdbcType=DECIMAL}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hengxunda.dao.entity.YinshangQuantity" >
+    update t_yinshang_quantity
+    <set >
+      <if test="quantity != null" >
+        quantity = #{quantity,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where advert_user_id = #{advertUserId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hengxunda.dao.entity.YinshangQuantity" >
+    update t_yinshang_quantity
+    set quantity = #{quantity,jdbcType=DECIMAL}
+    where advert_user_id = #{advertUserId,jdbcType=VARCHAR}
+  </update>
+</mapper>

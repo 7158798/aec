@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.MerchantCustomMapper" >
+  <resultMap id="BaseResultMapPo" type="com.hengxunda.dao.po.web.MerchantPo" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="INTEGER" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="role" property="role" jdbcType="INTEGER" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="salt" property="salt" jdbcType="VARCHAR" />
+    <result column="pay_password" property="payPassword" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="login_status" property="loginStatus" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="VARCHAR"/>
+    <result column="bond" property="bond" jdbcType="VARCHAR"/>
+    <result column="balance" property="balance" jdbcType="VARCHAR"/>
+  </resultMap>
+
+    <sql id="Base_Column_List_Po">
+    a.id, a.name, a.nick_name, a.uid, a.phone, a.email, a.gender, a.avatar, a.status, a.level, a.role, a.password,
+    a.salt, a.pay_password, a.id_card, a.login_status, a.create_user, a.create_time, a.update_user,
+    a.update_time, b.bond, b.balance
+    </sql>
+
+  <select id="getMerchantSelect" resultMap="BaseResultMapPo" parameterType="map">
+    select
+    <include refid="Base_Column_List_Po"/>
+    from t_user a left join t_wallet_info b on a.id = b.user_id and b.type = 'AEC'
+    where
+    <if test="record.id != null" >
+      a.id = #{record.id,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.name != null" >
+      a.name = #{record.name,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.nickName != null" >
+      a.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.uid != null" >
+      a.uid = #{record.uid,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.phone != null" >
+      a.phone = #{record.phone,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.email != null" >
+      a.email = #{record.email,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.gender != null" >
+      a.gender = #{record.gender,jdbcType=INTEGER} and
+    </if>
+    <if test="record.avatar != null" >
+      a.avatar = #{record.avatar,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.status != null" >
+      a.status = #{record.status,jdbcType=INTEGER} and
+    </if>
+    <if test="record.level != null" >
+      a.level = #{record.level,jdbcType=INTEGER} and
+    </if>
+    <if test="record.role != null" >
+      a.role = #{record.role,jdbcType=INTEGER} and
+    </if>
+    <if test="record.password != null" >
+      a.password = #{record.password,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.salt != null" >
+      a.salt = #{record.salt,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.payPassword != null" >
+      a.pay_password = #{record.payPassword,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.idCard != null" >
+      a.id_card = #{record.idCard,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.loginStatus != null" >
+      a.login_status = #{record.loginStatus,jdbcType=INTEGER} and
+    </if>
+    <if test="record.createUser != null" >
+      a.create_user = #{record.createUser,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.createBeginTime != null" >
+      a.create_time between #{record.createBeginTime,jdbcType=TIMESTAMP} and
+      #{record.createEndTime,jdbcType=TIMESTAMP} and
+    </if>
+    1=1
+    order by a.create_time desc
+    limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+  </select>
+  <select id="countMerchantSelect" parameterType="map" resultType="java.lang.Integer">
+    select count(0)
+    from t_user a left join t_wallet_info b on a.id = b.user_id and b.type = 'AEC'
+    where
+    <if test="record.id != null" >
+      a.id = #{record.id,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.name != null" >
+      a.name = #{record.name,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.nickName != null" >
+      a.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.uid != null" >
+      a.uid = #{record.uid,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.phone != null" >
+      a.phone = #{record.phone,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.email != null" >
+      a.email = #{record.email,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.gender != null" >
+      a.gender = #{record.gender,jdbcType=INTEGER} and
+    </if>
+    <if test="record.avatar != null" >
+      a.avatar = #{record.avatar,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.status != null" >
+      a.status = #{record.status,jdbcType=INTEGER} and
+    </if>
+    <if test="record.level != null" >
+      a.level = #{record.level,jdbcType=INTEGER} and
+    </if>
+    <if test="record.role != null" >
+      a.role = #{record.role,jdbcType=INTEGER} and
+    </if>
+    <if test="record.password != null" >
+      a.password = #{record.password,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.salt != null" >
+      a.salt = #{record.salt,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.payPassword != null" >
+      a.pay_password = #{record.payPassword,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.idCard != null" >
+      a.id_card = #{record.idCard,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.loginStatus != null" >
+      a.login_status = #{record.loginStatus,jdbcType=INTEGER} and
+    </if>
+    <if test="record.createUser != null" >
+      a.create_user = #{record.createUser,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.createBeginTime != null" >
+      a.create_time between #{record.createBeginTime,jdbcType=TIMESTAMP} and
+      #{record.createEndTime,jdbcType=TIMESTAMP} and
+    </if>
+    1=1
+  </select>
+  <select id="selectMerchantPoById" resultMap="BaseResultMapPo" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List_Po"/>
+    from t_user a left join t_wallet_info b on a.id = b.user_id and b.type = 'AEC'
+    where
+    a.id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="getTradeInfo" parameterType="java.lang.String" resultType="com.hengxunda.dao.po.web.MerchantTradeInfo">
+    select
+    (select count(0) from t_order a left join t_yinshang_advert b on a.advert_id = b.id
+    where
+    b.create_user = #{id,jdbcType=VARCHAR} and
+    a.status in (0,1,2)) undone,
+    (select count(0) from t_order a left join t_yinshang_advert b on a.advert_id = b.id
+    where
+    b.create_user = #{id,jdbcType=VARCHAR} and
+    a.status <![CDATA[ <> ]]> 3) total
+  </select>
+
+  <select id="getMerchantsForDownload" resultMap="BaseResultMapPo" parameterType="com.hengxunda.dao.po.web.MerchantPo">
+    select
+    <include refid="Base_Column_List_Po"/>
+    from t_user a left join t_wallet_info b on a.id = b.user_id and b.type = 'AEC'
+    where
+    <if test="record.id != null" >
+      a.id = #{record.id,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.name != null" >
+      a.name = #{record.name,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.nickName != null" >
+      a.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.uid != null" >
+      a.uid = #{record.uid,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.phone != null" >
+      a.phone = #{record.phone,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.email != null" >
+      a.email = #{record.email,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.gender != null" >
+      a.gender = #{record.gender,jdbcType=INTEGER} and
+    </if>
+    <if test="record.avatar != null" >
+      a.avatar = #{record.avatar,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.status != null" >
+      a.status = #{record.status,jdbcType=INTEGER} and
+    </if>
+    <if test="record.level != null" >
+      a.level = #{record.level,jdbcType=INTEGER} and
+    </if>
+    <if test="record.role != null" >
+      a.role = #{record.role,jdbcType=INTEGER} and
+    </if>
+    <if test="record.password != null" >
+      a.password = #{record.password,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.salt != null" >
+      a.salt = #{record.salt,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.payPassword != null" >
+      a.pay_password = #{record.payPassword,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.idCard != null" >
+      a.id_card = #{record.idCard,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.loginStatus != null" >
+      a.login_status = #{record.loginStatus,jdbcType=INTEGER} and
+    </if>
+    <if test="record.createUser != null" >
+      a.create_user = #{record.createUser,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.createBeginTime != null" >
+      a.create_time between #{record.createBeginTime,jdbcType=TIMESTAMP} and
+      #{record.createEndTime,jdbcType=TIMESTAMP} and
+    </if>
+    1=1
+    order by a.create_time desc
+  </select>
+
+</mapper>

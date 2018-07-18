@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.OrderCustomMapper">
+
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.Order">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="transaction_pair" property="transactionPair" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="advert_id" property="advertId" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="unit_price" property="unitPrice" jdbcType="DECIMAL"/>
+        <result column="quantity" property="quantity" jdbcType="DECIMAL"/>
+        <result column="money" property="money" jdbcType="DECIMAL"/>
+        <result column="tax_rate" property="taxRate" jdbcType="VARCHAR"/>
+        <result column="cancel_status" property="cancelStatus" jdbcType="INTEGER"/>
+        <result column="appeal_status" property="appealStatus" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="role" property="role" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="confirm_time" property="confirmTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="BaseResultMapWeb" type="com.hengxunda.dao.po.web.OrderWebPo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="buy_phone" property="buyPhone" jdbcType="VARCHAR"/>
+        <result column="buy_name" property="buyName" jdbcType="VARCHAR"/>
+        <result column="sell_phone" property="sellPhone" jdbcType="VARCHAR"/>
+        <result column="sell_name" property="sellName" jdbcType="VARCHAR"/>
+        <result column="quantity" property="number" jdbcType="DECIMAL"/>
+        <result column="unit_price" property="price" jdbcType="DECIMAL"/>
+        <result column="money" property="amount" jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, transaction_pair, type, order_no, advert_id, user_id, unit_price, quantity, money,
+        tax_rate, cancel_status, appeal_status, status, role, create_time, confirm_time,
+        update_user, update_time
+    </sql>
+    <sql id="Base_Column_List_web">
+        a.id, a.order_no,
+        b.phone buy_phone, b.name buy_name,
+        d.phone sell_phone, d.name sell_name,
+        a.quantity, a.unit_price, a.money, a.type, a.create_time, a.status
+    </sql>
+
+    <select id="getOrdersForWeb" resultMap="BaseResultMapWeb" parameterType="map">
+        select <include refid="Base_Column_List_web"/>
+        from t_order a left join t_user b on a.user_id = b.id
+        left join t_yinshang_advert c on c.id = a.advert_id
+        left join t_user d on c.create_user = d.id
+        where
+        <if test="record.id != null" >
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.orderNo != null">
+            a.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            b.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            b.name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            d.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellName != null" >
+            d.name = #{record.sellName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100" >
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+
+    </select>
+    <select id="countOrdersForWeb"  resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.OrderWebPo">
+        select
+        count(0)
+        from t_order a left join t_user b on a.user_id = b.id
+        left join t_yinshang_advert c on c.id = a.advert_id
+        left join t_user d on c.create_user = d.id
+        where
+        <if test="record.id != null" >
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.orderNo != null">
+            a.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            b.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            b.name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            d.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            d.name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100" >
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+    </select>
+    <select id="downloadOrdersForWeb" resultMap="BaseResultMapWeb" parameterType="com.hengxunda.dao.po.web.OrderWebPo">
+        select <include refid="Base_Column_List_web"/>
+        from t_order a left join t_user b on a.user_id = b.id
+        left join t_yinshang_advert c on c.id = a.advert_id
+        left join t_user d on c.create_user = d.id
+        where
+        <if test="record.id != null" >
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.orderNo != null">
+            a.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            b.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            b.name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            d.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            d.name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100" >
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time desc
+    </select>
+
+
+    <select id="count" parameterType="com.hengxunda.dao.entity.Order" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        t_order
+        <where>
+            <include refid="selectionCriteria"/>
+        </where>
+    </select>
+
+    <select id="getCountQuantityByTypeOrStatus" resultType="java.math.BigDecimal">
+        SELECT
+        IFNULL(sum(quantity), 0)
+        FROM t_order
+        <where>
+            <if test="list != null and list.size > 0">
+                status IN
+                <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="type != null">
+                AND type = #{type}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findList" parameterType="com.hengxunda.dao.entity.Order" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_order
+        <where>
+            <include refid="selectionCriteria"/>
+        </where>
+    </select>
+
+    <sql id="selectionCriteria">
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="role != null">
+            AND role = #{role}
+        </if>
+        <if test="type != null">
+            AND type = #{type}
+        </if>
+        <if test="transactionPair != null">
+            AND transaction_pair = #{transactionPair}
+        </if>
+        <if test="advertId != null">
+            AND advert_id = #{advertId}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        <if test="adveruUserId != null">
+            AND adveru_user_id = #{adveruUserId}
+        </if>
+        <if test="createTime != null">
+            <![CDATA[ AND create_time BETWEEN DATE_SUB(#{createTime}, INTERVAL 30 DAY) AND #{createTime} ]]>
+        </if>
+    </sql>
+
+    <select id="getOrderList" resultType="com.hengxunda.dao.po.app.OrderPo">
+        SELECT
+            t.id,
+            t.type,
+            t.order_no orderNo,
+            t.`status`,
+            t.transaction_pair transactionPair,
+            t.money,
+            t.cancel_status cancelStatus,
+            t.appeal_status appealStatus,
+            t.create_time createTime,
+            if(tol.id is null,0,1) isLook,
+            u.nick_name nickName,
+            u.level
+        FROM
+        t_order t
+        left join t_order_look tol on t.id = tol.user_id and tol.user_id = #{userId}
+        join t_user u on u.id = t.adveru_user_id
+        where t.user_id = #{userId}
+        <if test="status!=-1">
+            and t.status = #{status}
+        </if>
+        order by t.create_time desc
+        limit #{startRow},#{rows}
+    </select>
+
+    <select id="countOrderList" resultType="java.lang.Integer">
+        SELECT
+          count(*)
+        FROM
+        t_order t
+        where t.user_id = #{userId}
+        <if test="status!=-1">
+            and t.status = #{status}
+        </if>
+    </select>
+
+
+    <select id="getWappOrderList" resultType="com.hengxunda.dao.po.app.OrderPo">
+        SELECT
+        t.id,
+        t.type,
+        t.order_no orderNo,
+        t.`status`,
+        t.transaction_pair transactionPair,
+        t.money,
+        t.cancel_status cancelStatus,
+        t.appeal_status appealStatus,
+        t.create_time createTime,
+        if(tol.id is null,0,1) isLook,
+        u.nick_name nickName
+        FROM
+        t_order t
+        left join t_order_look tol on t.id = tol.user_id and tol.user_id = #{userId}
+        join t_user u on u.id = t.user_id
+        where t.adveru_user_id = #{userId}
+        <if test="status!=-1">
+            and t.status = #{status}
+        </if>
+        order by t.create_time desc
+        limit #{startRow},#{rows}
+    </select>
+
+    <select id="countWappOrderList" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        t_order t
+        where t.adveru_user_id = #{userId}
+        <if test="status!=-1">
+            and t.status = #{status}
+        </if>
+    </select>
+
+
+    <select id="getTotalQuantityYinShang" resultType="java.lang.Integer">
+        select if(sum(o.quantity) is null,0,sum(o.quantity)) from t_order o where o.type = 1 and o.adveru_user_id = #{userId} and o.`status` in (0,1,2)
+    </select>
+
+    <select id="countUnpaid" resultType="java.lang.Integer">
+        select count(*) from t_order where user_id = #{userId} and type=#{type} and `status` = 0
+    </select>
+
+    <select id="countUnpaidByUserId" resultType="java.lang.Integer">
+        select count(*) from t_order where user_id = #{userId} and `status` in (0,1,2)
+    </select>
+</mapper>

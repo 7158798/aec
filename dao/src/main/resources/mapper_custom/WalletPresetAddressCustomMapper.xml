@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.WalletPresetAddressCustomMapper" >
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.WalletPresetAddress" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="account" property="account" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="getWalletAddressMaxAccountId" parameterType="map" resultType="long">
+      select
+      ifnull( Max(substring(`account`,13)+0),0)
+      from
+      t_wallet_preset_address
+      WHERE `type` =#{type}
+    </select>
+    <insert id="batchInsertAddress" parameterType="java.util.List" >
+        <foreach collection="list" separator=";" item="item"  close=";">
+            insert into t_wallet_preset_address ( type, status,
+            user_id, address, account
+            )
+            values ( #{item.type,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
+            #{item.userId,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.account,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    <select id="countAddresTotal" parameterType="map" resultType="long">
+        select
+        ifnull(COUNT(*),0)
+        from
+        t_wallet_preset_address
+        WHERE `type` =#{type}
+    </select>
+    <select id="countAddresTotalNoUse" parameterType="map" resultType="long">
+        select
+        ifnull(COUNT(*),0)
+        from
+        t_wallet_preset_address
+        WHERE `type` =#{type} AND `status`=1
+    </select>
+</mapper>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.BondApplyCustomMapper">
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.po.web.BondApplyPo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="total_bond" property="totalBond" jdbcType="DECIMAL"/>
+        <result column="bond" property="bond" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    a.id, a.type, a.user_id, a.total_bond, a.bond, a.status, a.reason, a.create_time, a.update_user, a.update_time,
+    b.phone, b.name
+  </sql>
+
+    <select id="getBondApplySelect" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from t_bond_apply a left join t_user b on a.user_id = b.id
+        where
+        <if test="record.id != null">
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.userId != null">
+            a.user_id = #{record.userId,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.totalBond != null">
+            a.total_bond = #{record.totalBond,jdbcType=DECIMAL} and
+        </if>
+        <if test="record.bond != null">
+            a.bond = #{record.bond,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.status != 100">
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.reason != null">
+            a.reason = #{record.reason,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.createTime != null">
+            a.create_time = #{record.createTime,jdbcType=TIMESTAMP} and
+        </if>
+        <if test="record.updateUser != null">
+            a.update_user = #{record.updateUser,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.updateTime != null">
+            a.update_time = #{record.updateTime,jdbcType=TIMESTAMP} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+    <select id="downloadBondApplys" resultMap="BaseResultMap" parameterType="com.hengxunda.dao.po.web.BondApplyPo">
+        select
+        <include refid="Base_Column_List"/>
+        from t_bond_apply a left join t_user b on a.user_id = b.id
+        where
+        <if test="record.id != null">
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.userId != null">
+            a.user_id = #{record.userId,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.totalBond != null">
+            a.total_bond = #{record.totalBond,jdbcType=DECIMAL} and
+        </if>
+        <if test="record.bond != null">
+            a.bond = #{record.bond,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.status != 100">
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.reason != null">
+            a.reason = #{record.reason,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.createTime != null">
+            a.create_time = #{record.createTime,jdbcType=TIMESTAMP} and
+        </if>
+        <if test="record.updateUser != null">
+            a.update_user = #{record.updateUser,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.updateTime != null">
+            a.update_time = #{record.updateTime,jdbcType=TIMESTAMP} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time desc
+    </select>
+    <select id="countBondApplySelect" resultType="java.lang.Integer"
+            parameterType="com.hengxunda.dao.po.web.BondApplyPo">
+        select count(0)
+        from
+        t_bond_apply a left join t_user b on a.user_id = b.id
+        where
+        <if test="record.id != null">
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100">
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.userId != null">
+            a.user_id = #{record.userId,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.totalBond != null">
+            a.total_bond = #{record.totalBond,jdbcType=DECIMAL} and
+        </if>
+        <if test="record.bond != null">
+            a.bond = #{record.bond,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.status != 100">
+            a.status = #{record.status,jdbcType=INTEGER} and
+        </if>
+        <if test="record.reason != null">
+            a.reason = #{record.reason,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.createTime != null">
+            a.create_time = #{record.createTime,jdbcType=TIMESTAMP} and
+        </if>
+        <if test="record.updateUser != null">
+            a.update_user = #{record.updateUser,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.updateTime != null">
+            a.update_time = #{record.updateTime,jdbcType=TIMESTAMP} and
+        </if>
+        <if test="record.phone != null">
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            b.name = #{record.name,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+    </select>
+
+    <update id="reviewBondApply">
+        update t_bond_apply
+        set status = #{status,jdbcType=VARCHAR}
+        <if test="reason != null">
+            ,reason = #{reason,jdbcType=VARCHAR}
+        </if>
+        where id = #{id,jdbcType=VARCHAR} and status = 0
+    </update>
+
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        t_bond_apply
+        <where>
+            <if test="list != null and list.size > 0">
+                AND type IN
+                <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        <if test="pageNo != null and pageSize != null">
+            LIMIT #{pageNo}, #{pageSize}
+        </if>
+    </select>
+
+</mapper>

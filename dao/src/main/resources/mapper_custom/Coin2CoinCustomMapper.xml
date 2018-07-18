@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.Coin2CoinCustomMapper">
+
+    <resultMap id="BaseResultMapWeb" type="com.hengxunda.dao.po.web.OrderWebPo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="bb_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="buy_phone" property="buyPhone" jdbcType="VARCHAR"/>
+        <result column="buy_name" property="buyName" jdbcType="VARCHAR"/>
+        <result column="sell_phone" property="sellPhone" jdbcType="VARCHAR"/>
+        <result column="sell_name" property="sellName" jdbcType="VARCHAR"/>
+        <result column="trans_amount" property="number" jdbcType="DECIMAL"/>
+        <result column="unit_price" property="price" jdbcType="DECIMAL"/>
+        <result column="total_price" property="amount" jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List_web">
+        a.id, a.bb_no,
+        b.phone buy_phone, b.nick_name buy_name,
+        d.phone sell_phone, d.nick_name sell_name,
+        a.unit_price, a.trans_amount,a.total_price, c.type, a.create_time
+    </sql>
+
+    <select id="getOrdersList" resultMap="BaseResultMapWeb" parameterType="map">
+        select <include refid="Base_Column_List_web"/>
+        from t_bb_trans a left join t_user b on a.user_id = b.id
+        left join t_bb_advert c on a.bb_advert_id = c.id
+        left join t_user d on c.user_id = d.id
+        where
+        <if test="record.orderNo != null">
+            a.bb_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            b.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            b.nick_name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            d.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellName != null" >
+            d.nick_name = #{record.sellName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            c.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+
+    </select>
+    <select id="countOrdersList"  resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.OrderWebPo">
+        select
+        count(0)
+        from t_bb_trans a left join t_user b on a.user_id = b.id
+        left join t_bb_advert c on a.bb_advert_id = c.id
+        left join t_user d on c.user_id = d.id
+        where
+        <if test="record.orderNo != null">
+            a.bb_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            b.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            b.nick_name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            d.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellName != null" >
+            d.nick_name = #{record.sellName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            c.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+    </select>
+
+    <select id="downloadOrders" resultMap="BaseResultMapWeb" parameterType="map">
+        select <include refid="Base_Column_List_web"/>
+        from t_bb_trans a left join t_user b on a.user_id = b.id
+        left join t_bb_advert c on a.bb_advert_id = c.id
+        left join t_user d on c.user_id = d.id
+        where
+        <if test="record.orderNo != null">
+            a.bb_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyPhone != null" >
+            b.phone = #{record.buyPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.buyName != null" >
+            b.nick_name = #{record.buyName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellPhone != null" >
+            d.phone = #{record.sellPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.sellName != null" >
+            d.nick_name = #{record.sellName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            c.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time &gt;= #{record.beginTime,jdbcType=TIMESTAMP} and
+        </if>
+        <if test="record.endTime != null">
+            a.create_time &lt;= #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by a.create_time desc
+    </select>
+
+
+
+
+    <sql id="Advert_List_web">
+        a.id, a.amount number, a.price, a.type, a.create_time createTime,
+        b.phone, b. nick_name nickName,
+        a.amount - a.rest_amount as finishTotal,
+        a.amount * a.price as amount
+    </sql>
+
+    <select id="getAdvertList" resultType="com.hengxunda.dao.po.web.Coin2CoinAdvertPo" parameterType="com.hengxunda.dao.po.web.Coin2CoinAdvertPo">
+        select <include refid="Advert_List_web"/>
+        from t_bb_advert a left join t_user b on a.user_id = b.id
+        where
+        <if test="record.id != null">
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null" >
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.nickName != null" >
+            b.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.status = '0'
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+
+    </select>
+    <select id="countCoin2CoinAdvert"  resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.OrderWebPo">
+        select
+        count(0)
+        from t_bb_advert a left join t_user b on a.user_id = b.id
+        where
+        <if test="record.id != null">
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null" >
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.nickName != null" >
+            b.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.status = '0'
+    </select>
+
+
+    <select id="downloadAdvert" resultType="com.hengxunda.dao.po.web.Coin2CoinAdvertPo" parameterType="com.hengxunda.dao.po.web.Coin2CoinAdvertPo">
+        select <include refid="Advert_List_web"/>
+        from t_bb_advert a left join t_user b on a.user_id = b.id
+        where
+        <if test="record.id != null">
+            a.id = #{record.id,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null" >
+            b.phone = #{record.phone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.nickName != null" >
+            b.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.type != 100" >
+            a.type = #{record.type,jdbcType=INTEGER} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time &gt;= #{record.beginTime,jdbcType=TIMESTAMP} and
+        </if>
+        <if test="record.endTime != null">
+            a.create_time &lt;= #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.status = '0'
+        order by a.create_time desc
+    </select>
+</mapper>

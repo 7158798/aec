@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper.EthTransactionReceiptRequestMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.EthTransactionReceiptRequest" >
+    <id column="hash" property="hash" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="lastTime" property="lasttime" jdbcType="TIMESTAMP" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.hengxunda.dao.entity.EthTransactionReceiptRequest" extends="BaseResultMap" >
+    <result column="receipt" property="receipt" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    hash, status, createTime, lastTime, count
+  </sql>
+  <sql id="Blob_Column_List" >
+    receipt
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequestExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tb_eth_transaction_receipt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequestExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_eth_transaction_receipt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tb_eth_transaction_receipt
+    where hash = #{hash,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tb_eth_transaction_receipt
+    where hash = #{hash,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequestExample" >
+    delete from tb_eth_transaction_receipt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequest" >
+    insert into tb_eth_transaction_receipt (hash, status, createTime, 
+      lastTime, count, receipt
+      )
+    values (#{hash,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{lasttime,jdbcType=TIMESTAMP}, #{count,jdbcType=INTEGER}, #{receipt,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequest" >
+    insert into tb_eth_transaction_receipt
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="hash != null" >
+        hash,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="lasttime != null" >
+        lastTime,
+      </if>
+      <if test="count != null" >
+        count,
+      </if>
+      <if test="receipt != null" >
+        receipt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="hash != null" >
+        #{hash,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lasttime != null" >
+        #{lasttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="count != null" >
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="receipt != null" >
+        #{receipt,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequestExample" resultType="java.lang.Integer" >
+    select count(*) from tb_eth_transaction_receipt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tb_eth_transaction_receipt
+    <set >
+      <if test="record.hash != null" >
+        hash = #{record.hash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=CHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.lasttime != null" >
+        lastTime = #{record.lasttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.count != null" >
+        count = #{record.count,jdbcType=INTEGER},
+      </if>
+      <if test="record.receipt != null" >
+        receipt = #{record.receipt,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update tb_eth_transaction_receipt
+    set hash = #{record.hash,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=CHAR},
+      createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      lastTime = #{record.lasttime,jdbcType=TIMESTAMP},
+      count = #{record.count,jdbcType=INTEGER},
+      receipt = #{record.receipt,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tb_eth_transaction_receipt
+    set hash = #{record.hash,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=CHAR},
+      createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      lastTime = #{record.lasttime,jdbcType=TIMESTAMP},
+      count = #{record.count,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequest" >
+    update tb_eth_transaction_receipt
+    <set >
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lasttime != null" >
+        lastTime = #{lasttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="count != null" >
+        count = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="receipt != null" >
+        receipt = #{receipt,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where hash = #{hash,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequest" >
+    update tb_eth_transaction_receipt
+    set status = #{status,jdbcType=CHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      lastTime = #{lasttime,jdbcType=TIMESTAMP},
+      count = #{count,jdbcType=INTEGER},
+      receipt = #{receipt,jdbcType=LONGVARCHAR}
+    where hash = #{hash,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hengxunda.dao.entity.EthTransactionReceiptRequest" >
+    update tb_eth_transaction_receipt
+    set status = #{status,jdbcType=CHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      lastTime = #{lasttime,jdbcType=TIMESTAMP},
+      count = #{count,jdbcType=INTEGER}
+    where hash = #{hash,jdbcType=VARCHAR}
+  </update>
+</mapper>

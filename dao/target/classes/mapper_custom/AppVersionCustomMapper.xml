@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.AppVersionCustomMapper">
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.AppVersion">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="source" property="source" jdbcType="INTEGER"/>
+        <result column="os_type" property="osType" jdbcType="INTEGER"/>
+        <result column="code" property="code" jdbcType="INTEGER"/>
+        <result column="value" property="value" jdbcType="VARCHAR"/>
+        <result column="force_update" property="forceUpdate" jdbcType="BIT"/>
+        <result column="download_link" property="downloadLink" jdbcType="VARCHAR"/>
+        <result column="comment" property="comment" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="getAppBySourceAndOsType" resultMap="BaseResultMap">
+    select * from t_app_version where source = #{source} and os_type = #{osType} order by create_time DESC LIMIT 1
+  </select>
+
+    <select id="getAppBySource" resultMap="BaseResultMap">
+    select id,source,os_type ,code,value,force_update,download_link,`comment`,MAX(create_time) create_time from t_app_version where source=2 group by os_type;
+  </select>
+
+</mapper>

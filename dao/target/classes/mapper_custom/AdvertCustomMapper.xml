@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.AdvertCustomMapper">
+
+    <resultMap id="Advert_list_web" type="com.hengxunda.dao.po.web.AdvertWebPo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="stock" property="stock" jdbcType="DECIMAL"/>
+        <result column="enable_stock" property="enableStock" jdbcType="DECIMAL"/>
+        <result column="unit_price" property="unitPrice" jdbcType="DECIMAL"/>
+        <result column="is_limit" property="isLimit" jdbcType="INTEGER"/>
+        <result column="min_value" property="minValue" jdbcType="DECIMAL"/>
+        <result column="max_value" property="maxValue" jdbcType="DECIMAL"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="CNY" property="cny" jdbcType="INTEGER"/>
+        <result column="USD" property="usd" jdbcType="INTEGER"/>
+        <result column="EUR" property="eur" jdbcType="INTEGER"/>
+        <result column="HKD" property="hkd" jdbcType="INTEGER"/>
+        <result column="create_user" property="createUser" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="bond" property="bond" jdbcType="DECIMAL"/>
+        <result column="completed" property="completed" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <sql id="Base_Column_List_Web">
+    b.id, b.type, b.stock, b.enable_stock, b.stock-b.enable_stock completed, b.unit_price, b.is_limit, b.min_value, b.max_value, b.status,
+    b.CNY, b.USD, b.EUR, b.HKD, b.create_user, b.create_time, b.update_user, b.update_time, a.name, a.phone, c.bond
+    </sql>
+
+    <select id="getAdvertsForWeb" resultMap="Advert_list_web" parameterType="map">
+        select
+        <include refid="Base_Column_List_Web"/>
+        from t_user a right join t_yinshang_advert b on a.id = b.create_user
+        left join t_wallet_info c on b.create_user = c.user_id and c.type = 'AEC'
+        where
+        <if test="record.phone != null">
+            a.phone = #{record.phone, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            a.name = #{record.name, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.bond != null">
+            c.bond = #{record.bond, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.type != 100">
+            b.type = #{record.type, jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100">
+            b.status = #{record.status, jdbcType=INTEGER} and
+        </if>
+        <if test="record.minValue != null">
+            b.min_value = #{record.minValue, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.unitPrice != null">
+            b.unit_price = #{record.unitPrice, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.beginTime != null">
+            b.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by b.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+
+    <select id="countAdvertsForWeb" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.AdvertWebPo">
+        select
+        count(0)
+        from t_user a right join t_yinshang_advert b on a.id = b.create_user
+        left join t_wallet_info c on b.create_user = c.user_id and c.type = 'AEC'
+        where
+        <if test="record.phone != null">
+            a.phone = #{record.phone, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            a.name = #{record.name, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.bond != null">
+            c.bond = #{record.bond, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.type != 100">
+            b.type = #{record.type, jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100">
+            b.status = #{record.status, jdbcType=INTEGER} and
+        </if>
+        <if test="record.minValue != null">
+            b.min_value = #{record.minValue, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.unitPrice != null">
+            b.unit_price = #{record.unitPrice, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.beginTime != null">
+            b.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+    </select>
+
+    <select id="getAdvertsForDownload" resultMap="Advert_list_web" parameterType="com.hengxunda.dao.po.web.AdvertWebPo">
+        select
+        <include refid="Base_Column_List_Web"/>
+        from t_user a right join t_yinshang_advert b on a.id = b.create_user
+        left join t_wallet_info c on b.create_user = c.user_id and c.type = 'AEC'
+        where
+        <if test="record.phone != null">
+            a.phone = #{record.phone, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            a.name = #{record.name, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.bond != null">
+            c.bond = #{record.bond, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.type != 100">
+            b.type = #{record.type, jdbcType=INTEGER} and
+        </if>
+        <if test="record.status != 100">
+            b.status = #{record.status, jdbcType=INTEGER} and
+        </if>
+        <if test="record.minValue != null">
+            b.min_value = #{record.minValue, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.unitPrice != null">
+            b.unit_price = #{record.unitPrice, jdbcType=DECIMAL} and
+        </if>
+        <if test="record.beginTime != null">
+            b.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        1=1
+        order by b.create_time desc
+    </select>
+
+    <select id="findList" resultType="com.hengxunda.dao.po.AdvertListPo">
+        SELECT
+        advert.id,
+        advert.type,
+        advert.unit_price AS 'unitPrice',
+        advert.min_value AS 'minValue',
+        advert.max_value AS 'maxValue',
+        advert.status,
+        advert.create_user AS 'createUser',
+        advert.create_time AS 'createTime',
+        user.nick_name AS 'nickName',
+        count(o.id) AS 'volume',
+        pay.Alipay AS 'alipay',
+        pay.CNY,
+        pay.USD,
+        pay.EUR,
+        pay.HKD,
+        pay.PayPal,
+        pay.SWIFT,
+        pay.Xilian
+        FROM
+        t_yinshang_advert advert
+        LEFT JOIN t_user user ON advert.create_user = user.id
+        LEFT JOIN t_yinshang_is_pay pay ON advert.create_user = pay.user_id
+        <if test='transactionPair=="AEC/CNY"'>
+            AND (pay.CNY = 0 OR pay.Alipay = 0 OR pay.PayPal = 0 OR pay.SWIFT = 0 OR pay.Xilian = 0)
+        </if>
+        <if test='transactionPair=="AEC/USD"'>
+            AND (pay.USD = 0 OR pay.PayPal = 0 OR pay.SWIFT = 0 OR pay.Xilian = 0)
+        </if>
+        <if test='transactionPair=="AEC/EUR"'>
+            AND (pay.EUR = 0 OR pay.PayPal = 0 OR pay.SWIFT = 0 OR pay.Xilian = 0)
+        </if>
+        <if test='transactionPair=="AEC/HKD"'>
+            AND (pay.HKD = 0 OR pay.PayPal = 0 OR pay.SWIFT = 0 OR pay.Xilian = 0)
+        </if>
+        LEFT JOIN t_order o ON o.advert_id = advert.id AND o.status = 4 AND DATE_ADD(o.create_time, INTERVAL 30 DAY) >=
+        NOW()
+        WHERE
+        `user`.role = 2 <!-- 用户角色银商 -->
+        <if test="advert.status != null">
+            AND advert.status = #{advert.status}
+        </if>
+        <if test="advert.type != null">
+            AND advert.type = #{advert.type}
+        </if>
+        <if test="advert.createUser != null">
+            AND advert.create_user = #{advert.createUser}
+        </if>
+        GROUP BY advert.id
+        <choose>
+            <when test="online == 1"> <!-- 离线 -->
+                ORDER BY
+                user.login_status ,advert.unit_price
+                <if test="advert.type == 1"> <!-- 买入 -->
+                    DESC
+                </if>
+            </when>
+            <otherwise>
+                ORDER BY advert.unit_price
+                <if test="advert.type == 1"> <!-- 买入 -->
+                    DESC
+                </if>
+                , advert.create_time DESC
+            </otherwise>
+        </choose>
+        <if test="pageNo != null and pageSize != null">
+            LIMIT #{pageNo}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getAdverList1" resultType="com.hengxunda.dao.po.app.AdvertPo">
+        SELECT
+        adv.id,
+        adv.create_user advertUserId,
+        adv.enable_stock enableStock,
+        adv.unit_price unitPrice,
+        adv.min_value minV,
+        adv.max_value maxV,
+        if(u.avatar is null,'',u.avatar) avatar,
+        u.nick_name nickName,
+        u.`level`,
+
+        py.Alipay alipay,
+        py.CNY,
+        py.USD,
+        py.EUR,
+        py.HKD,
+        py.PayPal,
+        py.SWIFT,
+        py.Xilian
+        FROM
+        t_yinshang_advert adv
+        join t_user u on u.id = adv.create_user
+        join t_yinshang_is_pay py on adv.create_user = py.user_id
+        <if test='transactionPair=="AEC/CNY"'>
+            and (py.CNY = 0 or py.Alipay = 0 or py.PayPal =0 or py.SWIFT=0 or py.Xilian=0)
+        </if>
+        <if test='transactionPair=="AEC/USD"'>
+            AND (py.USD = 0 or py.PayPal =0 or py.SWIFT=0 or py.Xilian=0)
+        </if>
+        <if test='transactionPair=="AEC/EUR"'>
+            AND (py.EUR = 0 or py.PayPal =0 or py.SWIFT=0 or py.Xilian=0)
+        </if>
+        <if test='transactionPair=="AEC/HKD"'>
+            AND (py.HKD = 0 or py.PayPal =0 or py.SWIFT=0 or py.Xilian=0)
+        </if>
+        WHERE adv.status = 0
+        <if test="type==0">
+            AND adv.type = 1
+        </if>
+        <if test="type==1">
+            AND adv.type = 0
+        </if>
+        GROUP BY adv.id
+        order by u.login_status
+        <if test="type==0">
+            ,adv.unit_price desc
+        </if>
+        <if test="type==1">
+            ,adv.unit_price
+        </if>
+        limit #{startRow},#{rows}
+    </select>
+
+    <select id="getCompetedOrder" resultType="java.lang.Integer">
+        select count(*) from t_order o where  o.adveru_user_id = #{advertUserId} and o.status = 4 and o.create_time >= #{time}
+    </select>
+
+    <select id="countAdvertList1" resultType="java.lang.Integer">
+        select count(1) from (
+        SELECT
+        count(*)
+        FROM
+        t_yinshang_advert adv
+        join t_user u on u.id = adv.create_user
+        join t_yinshang_is_pay py on adv.create_user = py.user_id
+        <if test='transactionPair=="AEC/CNY"'>
+            and (py.CNY = 0 or py.Alipay = 0 or py.PayPal =0 or py.SWIFT=0 or py.Xilian=0)
+        </if>
+        <if test='transactionPair=="AEC/USD"'>
+            AND (py.USD = 0 or py.PayPal =0 or py.SWIFT=0 or py.Xilian=0)
+        </if>
+        <if test='transactionPair=="AEC/EUR"'>
+            AND (py.EUR = 0 or py.PayPal =0 or py.SWIFT=0 or py.Xilian=0)
+        </if>
+        <if test='transactionPair=="AEC/HKD"'>
+            AND (py.HKD = 0 or py.PayPal =0 or py.SWIFT=0 or py.Xilian=0)
+        </if>
+        WHERE adv.status = 0
+        <if test="type==0">
+            AND adv.type = 1
+        </if>
+        <if test="type==1">
+            AND adv.type = 0
+        </if>
+        GROUP BY adv.id
+        ) t
+    </select>
+
+    <select id="getAdverList" resultType="com.hengxunda.dao.po.app.AdvertPo">
+        SELECT
+        adv.id,
+        adv.enable_stock stock,
+        adv.unit_price unitPrice,
+        adv.min_value minV,
+        adv.max_value maxV,
+        if(u.avatar is null,'',u.avatar) avatar,
+        u.nick_name nickName,
+        u.`level`,
+        count(o.id) completedOrder,
+        if(count(tur.id)>0,0,1) alipay,
+        if(count(tubf.id)>0,0,1) isBank
+        FROM
+        t_yinshang_advert adv
+        join t_user u on u.id = adv.create_user
+        left join t_user_receive tur on tur.user_id = adv.create_user and tur.`status`=0
+        left join t_user_bank_info tubf on tubf.user_id = adv.create_user and tubf.status=0
+        <if test='transactionPair=="AEC/CNY"'>
+            AND tubf.CNY = 0
+        </if>
+        <if test='transactionPair=="AEC/URD"'>
+            AND tubf.USD = 0
+        </if>
+        <if test='transactionPair=="AEC/EUR"'>
+            AND tubf.EUR = 0
+        </if>
+        <if test='transactionPair=="AEC/HKD"'>
+            AND tubf.HKD = 0
+        </if>
+        left join t_order o on o.advert_id = adv.id and o.status = 4 and DATE_ADD(o.create_time,INTERVAL 30 DAY) &gt;=
+        NOW()
+        WHERE adv.status = 0 and adv.enable_stock &gt; 0
+        <if test="type==0">
+            AND adv.type = 1
+        </if>
+        <if test="type==1">
+            AND adv.type = 0
+        </if>
+        GROUP BY adv.id
+        limit #{startRow},#{rows}
+    </select>
+
+    <select id="countAdvertList" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM t_yinshang_advert adv
+        left join t_user_bank_info tubf on tubf.user_id = adv.create_user and tubf.status=0
+        <if test='transactionPair=="AEC/CNY"'>
+            AND tubf.CNY = 0
+        </if>
+        <if test='transactionPair=="AEC/URD"'>
+            AND tubf.USD = 0
+        </if>
+        <if test='transactionPair=="AEC/EUR"'>
+            AND tubf.EUR = 0
+        </if>
+        <if test='transactionPair=="AEC/HKD"'>
+            AND tubf.HKD = 0
+        </if>
+        WHERE adv.status = 0 and adv.enable_stock &gt; 0
+        <if test="type==0">
+            AND adv.type = 1
+        </if>
+        <if test="type==1">
+            AND adv.type = 0
+        </if>
+    </select>
+
+    <update id="updateAdvertEnableStockById">
+        update t_yinshang_advert set enable_stock = enable_stock + #{amount},update_user = now() where id = #{advertId}
+    </update>
+
+    <select id="getAdvertOfOrderInfo" resultType="com.hengxunda.dao.po.app.AdvertOfOrderPo">
+        SELECT
+            u.id,
+            u.nick_name nickName,
+            u.`level`,
+            u.phone,
+            u.name,
+            if(u.avatar is null,'',u.avatar) avatar,
+            count(o.id) completedOrder,
+            count(DISTINCT o1.id) appealOrder,
+            count(DISTINCT o2.id) appealSuccessOrder
+        FROM
+            t_yinshang_advert adv
+        join t_user u on u.id = adv.create_user
+        left join t_order o on o.adveru_user_id = adv.create_user and o.status = 4 and DATE_ADD(o.create_time,INTERVAL 30 DAY) >= NOW()
+        left join t_order o1 on o1.adveru_user_id = adv.create_user and o1.status = 2 and DATE_ADD(o1.create_time,INTERVAL 30 DAY) >= NOW()
+        left join t_order o2 on o2.adveru_user_id = adv.create_user and o2.status = 4 and o.appeal_status =2 and DATE_ADD(o2.create_time,INTERVAL 30 DAY) >= NOW()
+        where adv.id = #{advertId}
+    </select>
+
+    <select id="getPayInfo" resultType="com.hengxunda.dao.po.app.PayInfoPo">
+        SELECT
+        tubi.name,
+        tubi.bank_name bankName,
+        tubi.bank_no bankNo,
+        tur.`name` alipayName,
+        tur.address alipayAddress
+        FROM
+        t_user u
+        left join t_user_bank_info tubi on u.id = tubi.user_id
+        <if test='transactionPair=="AEC/CNY"'>
+            AND tubi.CNY = 0
+        </if>
+        <if test='transactionPair=="AEC/URD"'>
+            AND tubi.USD = 0
+        </if>
+        <if test='transactionPair=="AEC/EUR"'>
+            AND tubi.EUR = 0
+        </if>
+        <if test='transactionPair=="AEC/HKD"'>
+            AND tubi.HKD = 0
+        </if>
+        left join t_user_receive tur on u.id = tur.user_id
+        where u.id = #{userId}
+        limit 1
+    </select>
+
+    <select id="getBankInfo" resultType="com.hengxunda.dao.po.app.BankInfoPo">
+        SELECT
+            tubi.name,
+            tubi.bank_name bankName,
+            tubi.bank_no bankNo,
+            tubi.type,
+            tubi.remark
+        FROM
+            t_user u
+            left join t_user_bank_info tubi on u.id = tubi.user_id and tubi.status=0
+        where u.id = #{userId}
+    </select>
+
+    <select id="getAlipayInfo" resultType="com.hengxunda.dao.po.app.AlipayInfoPo">
+        SELECT
+            tur.`name` alipayName,
+            tur.address alipayAddress,
+            tur.remark,
+            tur.no
+        FROM
+            t_user u
+        left join t_user_receive tur on u.id = tur.user_id and tur.status=0
+        where u.id = #{userId}
+    </select>
+
+    <select id="existsUnitPrice" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM t_yinshang_advert
+        <where>
+            type = #{type} AND unit_price = #{unitPrice} AND create_user = #{createUser}
+            <if test="id != null">
+                AND id != #{id}
+            </if>
+        </where>
+    </select>
+
+</mapper>

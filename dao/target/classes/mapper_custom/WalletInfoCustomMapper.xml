@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.WalletInfoCustomMapper">
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.WalletInfo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="balance" property="balance" jdbcType="DECIMAL"/>
+        <result column="frozen_blance" property="frozenBlance" jdbcType="DECIMAL"/>
+        <result column="bond" property="bond" jdbcType="DECIMAL"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="wallet_password" property="walletPassword" jdbcType="VARCHAR"/>
+        <result column="wallet_file" property="walletFile" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, status, type, balance, frozen_blance, bond, address, wallet_password,
+        wallet_file, create_time, update_user, update_time
+    </sql>
+
+    <select id="getByAddress" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_wallet_info WHERE `address` = #{address} and `type` = #{type} LIMIT 0, 1
+    </select>
+
+    <update id="updateUserBalance" parameterType="map">
+        UPDATE t_wallet_info SET balance = balance + ${change_balance} WHERE address = #{address} AND `type`= #{type}
+    </update>
+
+    <select id="getByUserIdOrStatusOrType" parameterType="com.hengxunda.dao.entity.WalletInfo"
+            resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_wallet_info
+        <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="type != null">
+                AND type = #{type}
+            </if>
+        </where>
+    </select>
+    <update id="batchReleaseMscByUserId" parameterType="java.util.List">
+        <foreach collection="list" separator=";" item="item">
+            update t_wallet_info
+            set
+            balance = balance + #{item.balance},
+            frozen_blance = frozen_blance - #{item.frozenBlance},
+            update_user = #{item.updateUser},
+            update_time = #{item.updateTime}
+            where user_id = #{item.userId} and type = #{item.type}
+        </foreach>
+    </update>
+
+    <select id="getByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select * from t_wallet_info where user_id= #{userId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getByUserIdAndType" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select * from t_wallet_info where user_id = #{userId,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getByUserIdAndTypeForUpdate" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select * from t_wallet_info where user_id = #{userId,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR} for update
+    </select>
+
+    <update id="updateBalanceAndFrozenBlanceById">
+        update
+          t_wallet_info
+        set
+            balance = if(balance - #{amount} <![CDATA[ < ]]> 0,balance,balance - #{amount}),
+            frozen_blance = if(balance - #{amount} <![CDATA[ < ]]> 0,frozen_blance,frozen_blance + #{amount}),
+            update_time = if(balance - #{amount} <![CDATA[ < ]]> 0,update_time,now())
+        where id = #{walletId}
+    </update>
+
+    <update id="addMoneyForUser" parameterType="com.hengxunda.dao.entity.WalletInfo">
+        update t_wallet_info
+        set
+        balance =  balance + #{balance},
+            update_user = #{updateUser},
+            update_time = #{updateTime}
+        where user_id = #{userId} and type = #{type}
+    </update>
+
+
+    <update id="updateBalanceAndBondByUserId">
+        update t_wallet_info
+        set balance = balance - #{amount},bond = bond + #{amount},update_time = now()
+        where user_id = #{userId} and type = 'AEC' and balance <![CDATA[ >= ]]> #{amount}
+    </update>
+    <update id="updateLessBondByUserId">
+        update t_wallet_info
+        set balance = balance + #{amount},bond = bond - #{amount},update_time = now()
+        where user_id = #{userId} and type = 'AEC' and bond <![CDATA[ >= ]]> #{amount}
+    </update>
+
+    <update id="batchAddMoneyForUser" parameterType="java.util.List">
+        <foreach collection="list" item="walletInfo" separator=";">
+            update t_wallet_info
+            set
+            <if test="walletInfo.balance != null">
+                balance = balance + #{walletInfo.balance},
+            </if>
+            <if test="walletInfo.frozenBlance != null">
+                frozen_blance = frozen_blance + #{walletInfo.frozenBlance},
+            </if>
+            update_user = #{walletInfo.updateUser},
+            update_time = #{walletInfo.updateTime}
+            where user_id = #{walletInfo.userId} and type = #{walletInfo.type}
+        </foreach>
+    </update>
+
+    <update id="updateWalletInfoByUserIdAndType" parameterType="com.hengxunda.dao.entity.WalletInfo">
+        UPDATE t_wallet_info
+        <set>
+            <if test="balance != null">balance = balance + #{balance},</if>
+            <if test="frozenBlance != null">frozen_blance = frozen_blance + #{frozenBlance},</if>
+            <if test="bond != null">bond = bond + #{bond},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE user_id = #{userId} AND type = #{type}
+    </update>
+
+    <update id="updateBond">
+        UPDATE t_wallet_info
+        SET bond = bond + #{amount}, balance = balance - #{amount}, update_time = now()
+        WHERE
+	    user_id = #{userId} AND type = #{type} AND status = #{status}
+    </update>
+
+    <update id="updateBalance">
+
+        UPDATE t_wallet_info
+        SET
+        <choose>
+            <when test="flag">
+                balance = balance ${operator} #{amount}
+            </when>
+            <otherwise>
+                frozen_blance = frozen_blance ${operator} #{amount}
+            </otherwise>
+        </choose>
+        where user_id = #{userId} and type = #{type}
+    </update>
+
+    <update id="reduceBalance">
+
+        UPDATE t_wallet_info
+        SET balance =
+        IF (
+        balance - #{amount} <![CDATA[ < ]]> 0,
+        balance,
+        balance - #{amount}
+        )
+        where user_id = #{userId} and type = #{type}
+    </update>
+
+    <update id="updateSameCoinTradeBalance" parameterType="com.hengxunda.dao.entity.WalletRecord" >
+        UPDATE t_wallet_info
+        SET balance = CASE user_id
+        WHEN #{fromId} THEN
+
+        IF (
+        balance - #{fromAmount} <![CDATA[ < ]]> 0,
+        balance,
+        balance - #{fromAmount}
+        )
+        WHEN #{toId} THEN
+        balance + #{toAmount}
+        ELSE
+        balance
+        END,
+        update_time = CASE user_id
+        WHEN #{toId} THEN
+        IF (#{toAmount} > 0, update_time, now())
+        ELSE
+	      update_time
+        END
+        WHERE
+        user_id IN (#{fromId}, #{toId})
+        AND type = substring_index(#{transactionPair}, '/', 1)
+    </update>
+
+    <update id="updateAppealOrderBalance" parameterType="com.hengxunda.dao.entity.WalletRecord" >
+        UPDATE t_wallet_info
+        SET frozen_blance = CASE user_id
+        WHEN #{fromId} THEN
+
+        IF (
+            frozen_blance - #{fromAmount} <![CDATA[ < ]]> 0,
+            frozen_blance,
+            frozen_blance - #{fromAmount}
+        )
+        ElSE
+            frozen_blance
+        END,
+         balance = CASE user_id
+        WHEN #{toId} THEN
+            balance + #{toAmount}
+        ELSE
+            balance
+        END,
+         update_time = CASE user_id
+        WHEN #{toId} THEN
+
+        IF (#{toAmount} > 0, update_time, now())
+        ELSE
+	      update_time
+        END
+        WHERE
+            user_id IN (#{fromId}, #{toId})
+        AND type = substring_index(#{transactionPair}, '/', 1)
+    </update>
+
+    <update id="updateMsc2AecBalance" parameterType="com.hengxunda.dao.entity.WalletRecord">
+        UPDATE t_wallet_info
+        SET balance = CASE type
+        WHEN substring_index(#{transactionPair}, '/', -1) THEN
+
+        IF (
+        balance - #{fromAmount} <![CDATA[ < ]]> 0,
+        balance,
+        balance - #{fromAmount}
+        )
+        ELSE
+        balance
+        END,
+        frozen_blance = CASE type
+        WHEN substring_index(#{transactionPair}, '/', 1) THEN
+        frozen_blance + #{toAmount}
+        ELSE
+        frozen_blance
+        END
+        WHERE
+        user_id = #{fromId};
+    </update>
+
+    <update id="updateAec2BtcAndLtcBalance" parameterType="com.hengxunda.dao.entity.WalletRecord">
+        UPDATE t_wallet_info
+        SET balance = CASE type
+        WHEN substring_index(#{transactionPair}, '/', -1) THEN
+        IF (
+        balance - #{fromAmount} <![CDATA[ < ]]> 0,
+        balance,
+        balance - #{fromAmount}
+        )
+        WHEN substring_index(#{transactionPair}, '/', 1) THEN
+        balance + #{toAmount}
+        ELSE
+        balance
+        END
+        WHERE
+        user_id = #{fromId};
+    </update>
+
+    <select id="updateAppealOrderSilverBalance" parameterType="com.hengxunda.dao.entity.WalletRecord" statementType="CALLABLE" resultType="java.lang.Integer">
+         call appealOrder(#{fromId,mode=IN},#{toId,mode=IN},#{fromAmount,mode=IN},#{toAmount,mode=IN},#{transactionPair,mode=IN})
+    </select>
+
+    <select id="sumAllUserBalanceByType" resultType="java.math.BigDecimal" parameterType="java.lang.String">
+        SELECT
+        sum(w.balance + w.frozen_blance) AS balance
+        FROM
+        t_wallet_info w
+        WHERE
+        w.type = #{type}
+    </select>
+
+    <select id="sumUserBalanceByType" resultType="com.hengxunda.dao.entity.WalletInfo" parameterType="java.lang.String">
+        SELECT
+            w.user_id AS 'userId',
+            w.address,
+            (w.balance + w.frozen_blance) AS balance
+        FROM
+            t_wallet_info w
+        WHERE w.type = #{type}
+    </select>
+
+    <select id="bindWalletInfoAddress">
+        call p_bind_wallet_info(#{userId})
+    </select>
+
+    <update id="frozeByUserIdAndType" parameterType="com.hengxunda.dao.entity.WalletInfo">
+        update t_wallet_info
+        set
+        balance = balance - #{balance},
+        frozen_blance = frozen_blance + #{frozenBlance},
+        update_user = #{updateUser},
+        update_time = #{updateTime}
+        where user_id = #{userId} and type = #{type}
+    </update>
+
+    <update id="reduceFrozeBalanceByUserIdAndType" parameterType="com.hengxunda.dao.entity.WalletInfo">
+        update t_wallet_info
+        set frozen_blance =
+        IF (
+        frozen_blance - #{frozenBlance} &lt; 0,
+        frozen_blance,
+        frozen_blance - #{frozenBlance}
+        )
+        where user_id = #{userId} and type = #{type}
+    </update>
+
+    <update id="reduceBalanceByUserIdAndType" parameterType="com.hengxunda.dao.entity.WalletInfo">
+        update t_wallet_info
+        set balance =
+        IF (
+        balance - #{balance} &lt; 0,
+        balance,
+        balance - #{balance}
+        )
+        where user_id = #{userId} and type = #{type}
+    </update>
+
+    <update id="releaseBalanceByUserIdAndType" parameterType="com.hengxunda.dao.entity.WalletInfo">
+        update t_wallet_info
+           set balance = balance + #{balance},
+               frozen_blance = frozen_blance - #{balance}
+         where user_id = #{userId} and type = #{type}
+    </update>
+</mapper>

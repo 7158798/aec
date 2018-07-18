@@ -1,0 +1,113 @@
+
+
+
+
+online: false
+
+spring:
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://192.168.0.21:3306/blockbank_test?autoReconnect=true&maxReconnects=10&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&transformedBitIsBoolean=true&zeroDateTimeBehavior=convertToNull&serverTimezone=PRC&useSSL=false&useAffectedRows=true
+    username: block
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+    minIdle: 5
+    maxActive: 20
+    initialSize: 5
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 'MQ' FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: true
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat
+  redis:
+    host: 192.168.0.19
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 10
+        max-idle: 10
+    timeout: 60000
+
+
+redisson:
+  address: redis://192.168.0.19:6379
+  password:
+
+########################## BlockChain ##########################
+web3j:
+  coinBase: '0x542b56e77ee6c93ee8472b94e3d55619a9e287fa'
+  coinBasePassword: 'qwt123'
+  client-address: 'http://192.168.0.7:3331'
+  admin-client: true
+  httpTimeoutSeconds: 600
+  pollingAttemptsPerTxHash: 5
+  pollingFrequency: 20000
+  pollingEnable: false
+  contracts:
+     ms-coin:
+       address: '0xFccb4c40077E8D43e43C3D173f454E84e63Ecb80'
+       gasPrice: 37891200
+       gasLimit: 2000000
+     ae-coin:
+       address: '0x56c8b0722B13Fa19555E9F2D671023a6562Ebe5b'
+       gasPrice: 37891200
+       gasLimit: 2000000
+eth:
+  keystore: '/root/keystore/'
+  confirmations: 8
+
+#btc:
+#  host: '47.92.73.26'
+#  port: 18776
+#  username: 'wqt_user'
+#  password: 'wqt_pass'
+#  coinBase: 'CYuhrNqJPjAM28o1WXxayXoLL96bYgRec8'
+ # confirmations: 1
+ #local
+btc:
+  host: '127.0.0.1'
+  port: 18755
+  username: 'user1'
+  password: 'pass1'
+  coinBase: 'CYuhrNqJPjAM28o1WXxayXoLL96bYgRec8'
+  confirmations: 1
+
+ltc:
+  #host: '47.92.73.26'
+  #port: 18776
+  #username: 'wqt_user'
+  #password: 'wqt_pass'
+  coinBase: 'CYuhrNqJPjAM28o1WXxayXoLL96bYgRec8'
+  confirmations: 1
+  host: '127.0.0.1'
+  port: 10322
+  username: 'zwj'
+  password: 'zwjpw'
+
+sms:
+  smsCode:
+    #短信验证码过期时间（5分钟）
+    expireTime: 5
+  #短信url
+  url: http://47.92.118.152/msg
+  # 每天短信限制条数
+  smsCountLimit: 30
+
+#token过期时间（1小时）
+token:
+   expireTime: 1
+
+html:
+ domain:
+  url:

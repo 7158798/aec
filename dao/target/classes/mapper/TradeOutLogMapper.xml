@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper.TradeOutLogMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.TradeOutLog" >
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="shopUserId" property="shopuserid" jdbcType="CHAR" />
+    <result column="userId" property="userid" jdbcType="CHAR" />
+    <result column="billCode" property="billcode" jdbcType="CHAR" />
+    <result column="ordNo" property="ordno" jdbcType="VARCHAR" />
+    <result column="tradeType" property="tradetype" jdbcType="VARCHAR" />
+    <result column="coinType" property="cointype" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="lastTime" property="lasttime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, shopUserId, userId, billCode, ordNo, tradeType, coinType, amount, status, createTime, 
+    lastTime
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hengxunda.dao.entity.TradeOutLogExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_trade_out_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_trade_out_log
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_trade_out_log
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hengxunda.dao.entity.TradeOutLogExample" >
+    delete from t_trade_out_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hengxunda.dao.entity.TradeOutLog" >
+    insert into t_trade_out_log (id, shopUserId, userId, 
+      billCode, ordNo, tradeType, 
+      coinType, amount, status, 
+      createTime, lastTime)
+    values (#{id,jdbcType=CHAR}, #{shopuserid,jdbcType=CHAR}, #{userid,jdbcType=CHAR}, 
+      #{billcode,jdbcType=CHAR}, #{ordno,jdbcType=VARCHAR}, #{tradetype,jdbcType=VARCHAR}, 
+      #{cointype,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{status,jdbcType=CHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{lasttime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hengxunda.dao.entity.TradeOutLog" >
+    insert into t_trade_out_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="shopuserid != null" >
+        shopUserId,
+      </if>
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="billcode != null" >
+        billCode,
+      </if>
+      <if test="ordno != null" >
+        ordNo,
+      </if>
+      <if test="tradetype != null" >
+        tradeType,
+      </if>
+      <if test="cointype != null" >
+        coinType,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="lasttime != null" >
+        lastTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="shopuserid != null" >
+        #{shopuserid,jdbcType=CHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=CHAR},
+      </if>
+      <if test="billcode != null" >
+        #{billcode,jdbcType=CHAR},
+      </if>
+      <if test="ordno != null" >
+        #{ordno,jdbcType=VARCHAR},
+      </if>
+      <if test="tradetype != null" >
+        #{tradetype,jdbcType=VARCHAR},
+      </if>
+      <if test="cointype != null" >
+        #{cointype,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lasttime != null" >
+        #{lasttime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hengxunda.dao.entity.TradeOutLogExample" resultType="java.lang.Integer" >
+    select count(*) from t_trade_out_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_trade_out_log
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=CHAR},
+      </if>
+      <if test="record.shopuserid != null" >
+        shopUserId = #{record.shopuserid,jdbcType=CHAR},
+      </if>
+      <if test="record.userid != null" >
+        userId = #{record.userid,jdbcType=CHAR},
+      </if>
+      <if test="record.billcode != null" >
+        billCode = #{record.billcode,jdbcType=CHAR},
+      </if>
+      <if test="record.ordno != null" >
+        ordNo = #{record.ordno,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tradetype != null" >
+        tradeType = #{record.tradetype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cointype != null" >
+        coinType = #{record.cointype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.amount != null" >
+        amount = #{record.amount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=CHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.lasttime != null" >
+        lastTime = #{record.lasttime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_trade_out_log
+    set id = #{record.id,jdbcType=CHAR},
+      shopUserId = #{record.shopuserid,jdbcType=CHAR},
+      userId = #{record.userid,jdbcType=CHAR},
+      billCode = #{record.billcode,jdbcType=CHAR},
+      ordNo = #{record.ordno,jdbcType=VARCHAR},
+      tradeType = #{record.tradetype,jdbcType=VARCHAR},
+      coinType = #{record.cointype,jdbcType=VARCHAR},
+      amount = #{record.amount,jdbcType=DECIMAL},
+      status = #{record.status,jdbcType=CHAR},
+      createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      lastTime = #{record.lasttime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hengxunda.dao.entity.TradeOutLog" >
+    update t_trade_out_log
+    <set >
+      <if test="shopuserid != null" >
+        shopUserId = #{shopuserid,jdbcType=CHAR},
+      </if>
+      <if test="userid != null" >
+        userId = #{userid,jdbcType=CHAR},
+      </if>
+      <if test="billcode != null" >
+        billCode = #{billcode,jdbcType=CHAR},
+      </if>
+      <if test="ordno != null" >
+        ordNo = #{ordno,jdbcType=VARCHAR},
+      </if>
+      <if test="tradetype != null" >
+        tradeType = #{tradetype,jdbcType=VARCHAR},
+      </if>
+      <if test="cointype != null" >
+        coinType = #{cointype,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lasttime != null" >
+        lastTime = #{lasttime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hengxunda.dao.entity.TradeOutLog" >
+    update t_trade_out_log
+    set shopUserId = #{shopuserid,jdbcType=CHAR},
+      userId = #{userid,jdbcType=CHAR},
+      billCode = #{billcode,jdbcType=CHAR},
+      ordNo = #{ordno,jdbcType=VARCHAR},
+      tradeType = #{tradetype,jdbcType=VARCHAR},
+      coinType = #{cointype,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=DECIMAL},
+      status = #{status,jdbcType=CHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      lastTime = #{lasttime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+</mapper>

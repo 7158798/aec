@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.UserBankInfoCustomMapper">
+
+    <select id="getByUserIdOrStatus" resultType="java.lang.Boolean">
+        SELECT
+        count(1)
+        FROM
+        t_user_bank_info
+        <where>
+            (CNY = 0 OR USD = 0 OR EUR = 0 OR HKD = 0)
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+</mapper>

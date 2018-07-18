@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.TransactionPairCustomMapper">
+
+    <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.TransactionPair">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="create_user" property="createUser" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, type, create_user, create_time
+    </sql>
+
+    <select id="getTransactionPair" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_transaction_pair
+        <where>
+            type IN
+            <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,15 @@
+
+spring:
+  profiles:
+    active: dev
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml,classpath*:mapper_custom/*.xml
+  type-aliases-package: com.hengxunda.dao.entity
+
+# 分页配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: false
+  support-methods-arguments: true
+  params: count=countSql

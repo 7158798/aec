@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.BbAdvertCustomMapper" >
+
+  <select id="queryBbAdvertList" resultType="com.hengxunda.dao.po.app.BbAdvertVo">
+    SELECT
+      tba.id,
+      tba.user_id AS 'userId',
+      tu.nick_name AS 'nickName',
+      IF(tba.type = 0,1,0) AS 'type',
+      tba.price,
+      tba.amount,
+      tba.rest_amount AS 'restAmount',
+      tba.create_time AS 'createTime',
+      IF(tba.user_id = #{userId}, 0, 1) AS 'selfInd'
+    FROM
+      t_bb_advert tba
+    LEFT JOIN t_user tu ON tba.user_id = tu.id
+    WHERE tba.status = 0 AND tba.type = #{type} AND tba.rest_amount &gt; 0 AND tba.user_id &lt;&gt; #{userId}
+    <choose>
+      <when test="type==0">
+        ORDER BY tba.price ASC,tba.create_time DESC
+      </when>
+      <when test="type==1">
+        ORDER BY tba.price DESC,tba.create_time DESC
+      </when>
+    </choose>
+  </select>
+  <update id="reduceRestAmountById" parameterType="com.hengxunda.dao.entity.BbAdvert">
+    update t_bb_advert
+    set rest_amount =
+    IF (
+      rest_amount - #{restAmount} &lt; 0,
+      rest_amount,
+      rest_amount - #{restAmount}
+    )
+    where id = #{id}
+  </update>
+  <update id="updateStatusById" parameterType="com.hengxunda.dao.entity.BbAdvert">
+    update t_bb_advert
+       set status = #{status}
+     where id = #{id}
+  </update>
+  <select id="queryMineAdvertList" resultType="com.hengxunda.dao.po.app.BbAdvertVo" parameterType="java.lang.String">
+    SELECT
+      tba.id,
+      tba.user_id AS 'userId',
+      tu.nick_name AS 'nickName',
+      tba.type,
+      tba.price,
+      tba.amount,
+      tba.rest_amount AS 'restAmount',
+      tba.create_time AS 'createTime',
+      0 AS 'selfInd'
+    FROM
+      t_bb_advert tba
+    LEFT JOIN t_user tu ON tba.user_id = tu.id
+    WHERE tba.status = 0 AND tba.user_id = #{userId}
+    ORDER BY tba.create_time DESC
+  </select>
+
+  <select id="countByUserIdAndPrice" parameterType="com.hengxunda.dao.po.app.BbAdvertPo" resultType="java.lang.Integer">
+    SELECT
+      count(1)
+    FROM
+      t_bb_advert t
+    WHERE
+      t.user_id = #{userId}
+    AND t.type = #{type}
+    AND t.price = #{price}
+    AND t.status = 0
+  </select>
+</mapper>

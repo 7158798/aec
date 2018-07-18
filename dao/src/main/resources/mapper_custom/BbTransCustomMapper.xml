@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.BbTransCustomMapper" >
+
+  <select id="queryBbTransList" resultType="com.hengxunda.dao.po.app.BbTransPo" parameterType="java.lang.String">
+    SELECT
+      *
+    FROM
+    (
+      SELECT
+        tu.nick_name AS 'nickName',
+        tbt.bb_no AS 'bbNo',
+        tbt.unit_price AS 'unitPrice',
+        tbt.total_price AS 'totalPrice',
+        DATE_FORMAT(tbt.create_time,'%Y-%m-%d %H:%i:%s') AS 'createTime',
+        tbt.trans_amount AS 'transAmount',
+        IF(tba.type = 0,1,0) AS 'type'
+      FROM
+        t_bb_trans tbt
+      LEFT JOIN t_bb_advert tba ON tbt.bb_advert_id = tba.id
+      LEFT JOIN t_user tu ON tba.user_id = tu.id
+      WHERE
+        tbt.user_id = #{userId}
+      UNION ALL
+      SELECT
+        tu.nick_name AS 'nickName',
+        tbt.bb_no AS 'bbNo',
+        tbt.unit_price AS 'unitPrice',
+        tbt.total_price AS 'totalPrice',
+        DATE_FORMAT(tbt.create_time,'%Y-%m-%d %H:%i:%s') AS 'createTime',
+        tbt.trans_amount AS 'transAmount',
+        tba.type
+      FROM
+        t_bb_advert tba
+      LEFT JOIN t_bb_trans tbt ON tba.id = tbt.bb_advert_id
+      LEFT JOIN t_user tu ON tbt.user_id = tu.id
+      WHERE
+        tba.user_id = #{userId}
+    ) t
+    WHERE t.bbNo IS NOT NULL
+    ORDER BY
+      t.createTime DESC
+  </select>
+
+  <select id="queryLastTransPrice" resultType="java.math.BigDecimal">
+    SELECT
+      t.unit_price AS 'unitPrice'
+    FROM
+      t_bb_trans t
+    ORDER BY
+      t.create_time DESC
+    LIMIT 1
+  </select>
+</mapper>

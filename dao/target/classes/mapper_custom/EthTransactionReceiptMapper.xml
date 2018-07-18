@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hengxunda.dao.mapper_custom.EthTransactionReceiptDAO">
+
+    <select id="getPendingTransactions" parameterType="long" resultType="com.hengxunda.dao.entity.EthTransactionReceiptRequest">
+        SELECT
+          *
+        FROM
+        tb_eth_transaction_receipt
+        WHERE
+        `status` = '0'
+        AND createTime &lt; DATE_ADD(NOW(), INTERVAL -#{frequency} SECOND)
+    </select>
+
+    <insert id="add" parameterType="string">
+        INSERT INTO tb_eth_transaction_receipt(hash, status, createTime, count)
+        VALUES(#{transactionHash}, '0', NOW(), 0)
+    </insert>
+
+    <update id="updateAnswer" parameterType="string">
+        UPDATE tb_eth_transaction_receipt SET status = '1', receipt = #{receipt}, lastTime = NOW(), count = count + 1
+        WHERE hash = #{transactionHash}
+    </update>
+
+    <update id="updateCount" parameterType="string">
+        UPDATE tb_eth_transaction_receipt SET receipt = #{receipt}, lastTime = NOW(), count = count + 1
+        WHERE hash = #{transactionHash}
+    </update>
+
+    <update id="updateOvertime" parameterType="string">
+        UPDATE tb_eth_transaction_receipt SET status = '2', receipt = #{receipt}, lastTime = NOW(), count = count + 1
+        WHERE hash = #{transactionHash}
+    </update>
+
+</mapper>

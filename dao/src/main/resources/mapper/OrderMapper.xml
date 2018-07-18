@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper.OrderMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.Order" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="transaction_pair" property="transactionPair" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="adveru_user_id" property="adveruUserId" jdbcType="VARCHAR" />
+    <result column="advert_id" property="advertId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="unit_price" property="unitPrice" jdbcType="DECIMAL" />
+    <result column="quantity" property="quantity" jdbcType="DECIMAL" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="tax_rate" property="taxRate" jdbcType="VARCHAR" />
+    <result column="cancel_status" property="cancelStatus" jdbcType="INTEGER" />
+    <result column="appeal_status" property="appealStatus" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="role" property="role" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="confirm_time" property="confirmTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="appeal_user" property="appealUser" jdbcType="VARCHAR" />
+    <result column="appeal_time" property="appealTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, transaction_pair, type, order_no, adveru_user_id, advert_id, user_id, unit_price, 
+    quantity, money, tax_rate, cancel_status, appeal_status, status, role, create_time, 
+    confirm_time, update_user, update_time, appeal_user, appeal_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hengxunda.dao.entity.OrderExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_order
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_order
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hengxunda.dao.entity.OrderExample" >
+    delete from t_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hengxunda.dao.entity.Order" >
+    insert into t_order (id, transaction_pair, type, 
+      order_no, adveru_user_id, advert_id, 
+      user_id, unit_price, quantity, 
+      money, tax_rate, cancel_status, 
+      appeal_status, status, role, 
+      create_time, confirm_time, update_user, 
+      update_time, appeal_user, appeal_time
+      )
+    values (#{id,jdbcType=VARCHAR}, #{transactionPair,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{orderNo,jdbcType=VARCHAR}, #{adveruUserId,jdbcType=VARCHAR}, #{advertId,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=VARCHAR}, #{unitPrice,jdbcType=DECIMAL}, #{quantity,jdbcType=DECIMAL}, 
+      #{money,jdbcType=DECIMAL}, #{taxRate,jdbcType=VARCHAR}, #{cancelStatus,jdbcType=INTEGER}, 
+      #{appealStatus,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{role,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{confirmTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{appealUser,jdbcType=VARCHAR}, #{appealTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hengxunda.dao.entity.Order" >
+    insert into t_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="transactionPair != null" >
+        transaction_pair,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="adveruUserId != null" >
+        adveru_user_id,
+      </if>
+      <if test="advertId != null" >
+        advert_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="unitPrice != null" >
+        unit_price,
+      </if>
+      <if test="quantity != null" >
+        quantity,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="taxRate != null" >
+        tax_rate,
+      </if>
+      <if test="cancelStatus != null" >
+        cancel_status,
+      </if>
+      <if test="appealStatus != null" >
+        appeal_status,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="role != null" >
+        role,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="confirmTime != null" >
+        confirm_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="appealUser != null" >
+        appeal_user,
+      </if>
+      <if test="appealTime != null" >
+        appeal_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionPair != null" >
+        #{transactionPair,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="adveruUserId != null" >
+        #{adveruUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="advertId != null" >
+        #{advertId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="unitPrice != null" >
+        #{unitPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="quantity != null" >
+        #{quantity,jdbcType=DECIMAL},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="taxRate != null" >
+        #{taxRate,jdbcType=VARCHAR},
+      </if>
+      <if test="cancelStatus != null" >
+        #{cancelStatus,jdbcType=INTEGER},
+      </if>
+      <if test="appealStatus != null" >
+        #{appealStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="role != null" >
+        #{role,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmTime != null" >
+        #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appealUser != null" >
+        #{appealUser,jdbcType=VARCHAR},
+      </if>
+      <if test="appealTime != null" >
+        #{appealTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hengxunda.dao.entity.OrderExample" resultType="java.lang.Integer" >
+    select count(*) from t_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_order
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.transactionPair != null" >
+        transaction_pair = #{record.transactionPair,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderNo != null" >
+        order_no = #{record.orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adveruUserId != null" >
+        adveru_user_id = #{record.adveruUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.advertId != null" >
+        advert_id = #{record.advertId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.unitPrice != null" >
+        unit_price = #{record.unitPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.quantity != null" >
+        quantity = #{record.quantity,jdbcType=DECIMAL},
+      </if>
+      <if test="record.money != null" >
+        money = #{record.money,jdbcType=DECIMAL},
+      </if>
+      <if test="record.taxRate != null" >
+        tax_rate = #{record.taxRate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cancelStatus != null" >
+        cancel_status = #{record.cancelStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.appealStatus != null" >
+        appeal_status = #{record.appealStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.role != null" >
+        role = #{record.role,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.confirmTime != null" >
+        confirm_time = #{record.confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateUser != null" >
+        update_user = #{record.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.appealUser != null" >
+        appeal_user = #{record.appealUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.appealTime != null" >
+        appeal_time = #{record.appealTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_order
+    set id = #{record.id,jdbcType=VARCHAR},
+      transaction_pair = #{record.transactionPair,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=INTEGER},
+      order_no = #{record.orderNo,jdbcType=VARCHAR},
+      adveru_user_id = #{record.adveruUserId,jdbcType=VARCHAR},
+      advert_id = #{record.advertId,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      unit_price = #{record.unitPrice,jdbcType=DECIMAL},
+      quantity = #{record.quantity,jdbcType=DECIMAL},
+      money = #{record.money,jdbcType=DECIMAL},
+      tax_rate = #{record.taxRate,jdbcType=VARCHAR},
+      cancel_status = #{record.cancelStatus,jdbcType=INTEGER},
+      appeal_status = #{record.appealStatus,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=INTEGER},
+      role = #{record.role,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      confirm_time = #{record.confirmTime,jdbcType=TIMESTAMP},
+      update_user = #{record.updateUser,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      appeal_user = #{record.appealUser,jdbcType=VARCHAR},
+      appeal_time = #{record.appealTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hengxunda.dao.entity.Order" >
+    update t_order
+    <set >
+      <if test="transactionPair != null" >
+        transaction_pair = #{transactionPair,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="adveruUserId != null" >
+        adveru_user_id = #{adveruUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="advertId != null" >
+        advert_id = #{advertId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="unitPrice != null" >
+        unit_price = #{unitPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="quantity != null" >
+        quantity = #{quantity,jdbcType=DECIMAL},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="taxRate != null" >
+        tax_rate = #{taxRate,jdbcType=VARCHAR},
+      </if>
+      <if test="cancelStatus != null" >
+        cancel_status = #{cancelStatus,jdbcType=INTEGER},
+      </if>
+      <if test="appealStatus != null" >
+        appeal_status = #{appealStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="role != null" >
+        role = #{role,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmTime != null" >
+        confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appealUser != null" >
+        appeal_user = #{appealUser,jdbcType=VARCHAR},
+      </if>
+      <if test="appealTime != null" >
+        appeal_time = #{appealTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hengxunda.dao.entity.Order" >
+    update t_order
+    set transaction_pair = #{transactionPair,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      adveru_user_id = #{adveruUserId,jdbcType=VARCHAR},
+      advert_id = #{advertId,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR},
+      unit_price = #{unitPrice,jdbcType=DECIMAL},
+      quantity = #{quantity,jdbcType=DECIMAL},
+      money = #{money,jdbcType=DECIMAL},
+      tax_rate = #{taxRate,jdbcType=VARCHAR},
+      cancel_status = #{cancelStatus,jdbcType=INTEGER},
+      appeal_status = #{appealStatus,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      role = #{role,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      appeal_user = #{appealUser,jdbcType=VARCHAR},
+      appeal_time = #{appealTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

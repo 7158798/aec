@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.FeeMapper">
+
+    <resultMap id="Base_Fee_List" type="com.hengxunda.dao.po.web.FeeStatisticsPo">
+        <id column="_date" property="date" jdbcType="VARCHAR"/>
+        <result column="aec" property="aec" jdbcType="DECIMAL"/>
+        <result column="ctc" property="ctc" jdbcType="DECIMAL"/>
+        <result column="shop" property="shop" jdbcType="DECIMAL"/>
+        <result column="msc" property="msc" jdbcType="DECIMAL"/>
+        <result column="btc" property="btc" jdbcType="DECIMAL"/>
+        <result column="ltc" property="ltc" jdbcType="DECIMAL"/>
+    </resultMap>
+    <resultMap id="Base_Fee_Info" type="com.hengxunda.dao.po.web.WalletRecordFeePo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="from_name" property="fromName" jdbcType="VARCHAR"/>
+        <result column="from_phone" property="fromPhone" jdbcType="VARCHAR"/>
+        <result column="to_phone" property="toPhone" jdbcType="VARCHAR"/>
+        <result column="to_name" property="toName" jdbcType="VARCHAR"/>
+        <result column="from_amount" property="fromAmount" jdbcType="DECIMAL"/>
+        <result column="to_amount" property="toAmount" jdbcType="DECIMAL"/>
+        <result column="fee" property="fee" jdbcType="DECIMAL"/>
+        <result column="rate" property="rate" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="Base_Withdraw_Fee" type="com.hengxunda.dao.po.web.WithdrawFeePo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="coin" property="coin" jdbcType="VARCHAR"/>
+        <result column="to_address" property="address" jdbcType="VARCHAR"/>
+        <result column="to_amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="fee" property="fee" jdbcType="DECIMAL"/>
+        <result column="rate" property="rate" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="getFeeStatistics" resultMap="Base_Fee_List" parameterType="map">
+        select
+        a._date,
+        max(case  when a._type = 'AEC/AEC' and a.operate = 2 then a.fee else 0 end) as 'aec',
+        max(case  when a._type = 'AEC/AEC' and a.operate = 4 then a.fee else 0 end) as 'ctc',
+        max(case  when a._type = 'AEC/AEC' and a.operate = 14 then a.fee else 0 end) as 'shop',
+        max(case  when a._type = 'MSC/MSC' and a.operate = 2 then a.fee else 0 end) as 'msc',
+        max(case  when a._type = 'BTC/BTC' and a.operate = 2 then a.fee else 0 end) as 'btc',
+        max(case  when a._type = 'LTC/LTC' and a.operate = 2 then a.fee else 0 end) as 'ltc'
+        from
+        (select DATE_FORMAT( create_time, "%Y-%m-%d") _date, transaction_pair _type, sum(fee) fee, operate  from t_wallet_record
+        where
+        <if test="record.beginTime != null">
+            create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        fee > 0  group by transaction_pair, DATE_FORMAT( create_time, "%Y-%m-%d"), operate) a
+        group by a._date order by a._date desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+
+    <select id="countFeeStatistics" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.TimePo">
+        select
+        count(0)
+        from
+        (select
+        a._date
+        from
+        (select DATE_FORMAT( create_time, "%Y-%m-%d") _date, transaction_pair _type, sum(fee) fee, operate  from t_wallet_record
+        where
+        <if test="record.beginTime != null">
+            create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        fee > 0  group by transaction_pair, DATE_FORMAT( create_time, "%Y-%m-%d"), operate) a
+        group by a._date order by a._date desc) b
+    </select>
+
+    <select id="downloadFeeStatistics" resultMap="Base_Fee_List" parameterType="com.hengxunda.dao.po.web.TimePo">
+        select
+        a._date,
+        max(case  when a._type = 'AEC/AEC' and a.operate = 2 then a.fee else 0 end) as 'aec',
+        max(case  when a._type = 'AEC/AEC' and a.operate = 4 then a.fee else 0 end) as 'ctc',
+        max(case  when a._type = 'AEC/AEC' and a.operate = 14 then a.fee else 0 end) as 'shop',
+        max(case  when a._type = 'MSC/MSC' and a.operate = 2 then a.fee else 0 end) as 'msc',
+        max(case  when a._type = 'BTC/BTC' and a.operate = 2 then a.fee else 0 end) as 'btc',
+        max(case  when a._type = 'LTC/LTC' and a.operate = 2 then a.fee else 0 end) as 'ltc'
+        from
+        (select DATE_FORMAT( create_time, "%Y-%m-%d") _date, transaction_pair _type, sum(fee) fee, operate  from t_wallet_record
+        where
+        <if test="record.beginTime != null">
+            create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        fee > 0
+         group by transaction_pair, DATE_FORMAT( create_time, "%Y-%m-%d"), operate) a
+        group by a._date order by a._date desc
+    </select>
+
+    <select id="getPayFees" resultMap="Base_Fee_Info" parameterType="map">
+        select
+        a.id, b.order_no,
+        c.name from_name, c.phone from_phone, d.name to_name, d.phone to_phone,
+        a.from_amount, a.to_amount, a.fee, a.rate, a.create_time
+        from t_wallet_record a
+        left join t_order b on a.source = b.id
+        left join t_user c on a.from_id = c.id
+        left join t_user d on a.to_id = d.id
+        where
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromPhone != null" >
+            c.phone = #{record.fromPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromName != null" >
+            c.name = #{record.fromName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toPhone != null" >
+            d.phone = #{record.toPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toName != null" >
+            d.name = #{record.toName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.fee > 0 and a.transaction_pair = 'AEC/AEC' and a.operate = 14
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+
+    <select id="countPayFees" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.WalletRecordFeePo">
+        select
+        count(0)
+        from t_wallet_record a
+        left join t_order b on a.source = b.id
+        left join t_user c on a.from_id = c.id
+        left join t_user d on a.to_id = d.id
+        where
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromPhone != null" >
+            c.phone = #{record.fromPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromName != null" >
+            c.name = #{record.fromName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toPhone != null" >
+            d.phone = #{record.toPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toName != null" >
+            d.name = #{record.toName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.fee > 0 and a.transaction_pair = 'AEC/AEC' and a.operate = 14
+        order by a.create_time desc
+    </select>
+
+    <select id="downloadPayFees" resultMap="Base_Fee_Info" parameterType="com.hengxunda.dao.po.web.WalletRecordFeePo">
+        select
+        a.id, b.order_no,
+        c.name from_name, c.phone from_phone, d.name to_name, d.phone to_phone,
+        a.from_amount, a.to_amount, a.fee, a.rate, a.create_time
+        from t_wallet_record a
+        left join t_order b on a.source = b.id
+        left join t_user c on a.from_id = c.id
+        left join t_user d on a.to_id = d.id
+        where
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromPhone != null" >
+            c.phone = #{record.fromPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromName != null" >
+            c.name = #{record.fromName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toPhone != null" >
+            d.phone = #{record.toPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toName != null" >
+            d.name = #{record.toName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.fee > 0 and a.transaction_pair = 'AEC/AEC' and a.operate = 14
+        order by a.create_time desc
+    </select>
+
+    <select id="getCtcFees" resultMap="Base_Fee_Info" parameterType="map">
+        select
+        a.id, b.order_no,
+        c.name from_name, c.phone from_phone, d.name to_name, d.phone to_phone,
+        a.from_amount, a.to_amount, a.fee, a.rate, a.create_time
+        from t_wallet_record a
+        left join t_order b on a.source = b.id
+        left join t_user c on a.from_id = c.id
+        left join t_user d on a.to_id = d.id
+        where
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromPhone != null" >
+            c.phone = #{record.fromPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromName != null" >
+            c.name = #{record.fromName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toPhone != null" >
+            d.phone = #{record.toPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toName != null" >
+            d.name = #{record.toName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.fee > 0 and a.transaction_pair = 'AEC/AEC' and a.operate = 4
+        order by a.create_time desc
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+
+    <select id="countCtcFees" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.WalletRecordFeePo">
+        select
+        count(0)
+        from t_wallet_record a
+        left join t_order b on a.source = b.id
+        left join t_user c on a.from_id = c.id
+        left join t_user d on a.to_id = d.id
+        where
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromPhone != null" >
+            c.phone = #{record.fromPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromName != null" >
+            c.name = #{record.fromName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toPhone != null" >
+            d.phone = #{record.toPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toName != null" >
+            d.name = #{record.toName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.fee > 0 and a.transaction_pair = 'AEC/AEC' and a.operate = 4
+        order by a.create_time desc
+    </select>
+
+    <select id="downloadCtcFees" resultMap="Base_Fee_Info" parameterType="com.hengxunda.dao.po.web.WalletRecordFeePo">
+        select
+        a.id, b.order_no,
+        c.name from_name, c.phone from_phone, d.name to_name, d.phone to_phone,
+        a.from_amount, a.to_amount, a.fee, a.rate, a.create_time
+        from t_wallet_record a
+        left join t_order b on a.source = b.id
+        left join t_user c on a.from_id = c.id
+        left join t_user d on a.to_id = d.id
+        where
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromPhone != null" >
+            c.phone = #{record.fromPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.fromName != null" >
+            c.name = #{record.fromName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toPhone != null" >
+            d.phone = #{record.toPhone,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.toName != null" >
+            d.name = #{record.toName,jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.fee > 0 and a.transaction_pair = 'AEC/AEC' and a.operate = 4
+        order by a.create_time desc
+
+    </select>
+
+    <select id="getWithdrawFees" resultMap="Base_Withdraw_Fee" parameterType="map">
+      select
+	 a.id, b.order_no, c.name, c.phone, left(a.transaction_pair, 3) coin, a.to_address,  a.to_amount, a.fee, a.rate, a.create_time
+	 from t_wallet_record a left join t_order b on a.source = b.id left join t_user c on a.from_id = c.id
+	 where
+     <if test="record.orderNo != null">
+         b.order_no = #{record.orderNo, jdbcType=VARCHAR} and
+     </if>
+     <if test="record.name != null">
+         c.name = #{record.name, jdbcType=VARCHAR} and
+     </if>
+     <if test="record.phone != null">
+          c.phone = #{record.phone, jdbcType=VARCHAR} and
+     </if>
+	 <if test="record.coin != null">
+         a.transaction_pair = #{record.coin, jdbcType=VARCHAR} and
+     </if>
+     <if test="record.beginTime != null">
+          a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+          #{record.endTime,jdbcType=TIMESTAMP} and
+     </if>
+	 a.operate = 2 order by a.create_time desc
+     limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+
+    <select id="countWithdrawFees" resultType="java.lang.Integer" parameterType="com.hengxunda.dao.po.web.WithdrawFeePo">
+        select
+        count(0)
+        from t_wallet_record a left join t_order b on a.source = b.id left join t_user c on a.from_id = c.id
+        where
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            c.name = #{record.name, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            c.phone = #{record.phone, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.coin != null">
+            a.transaction_pair = #{record.coin, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP} and
+        </if>
+        a.operate = 2 order by a.create_time desc
+    </select>
+
+    <select id="downloadWithdrawFees" resultMap="Base_Withdraw_Fee" parameterType="com.hengxunda.dao.po.web.WithdrawFeePo">
+        select
+        a.id, b.order_no, c.name, c.phone, left(a.transaction_pair, 3) coin, a.from_address,  a.to_amount, a.fee, a.rate, a.create_time
+        from t_wallet_record a left join t_order b on a.source = b.id left join t_user c on a.from_id = c.id
+        where
+        <if test="record.orderNo != null">
+            b.order_no = #{record.orderNo, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.name != null">
+            c.name = #{record.name, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.phone != null">
+            c.phone = #{record.phone, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.coin != null">
+            a.transaction_pair = #{record.coin, jdbcType=VARCHAR} and
+        </if>
+        <if test="record.beginTime != null">
+            and a.create_time between #{record.beginTime,jdbcType=TIMESTAMP} and
+            #{record.endTime,jdbcType=TIMESTAMP}
+        </if>
+        a.operate = 2 order by a.create_time desc
+    </select>
+
+</mapper>

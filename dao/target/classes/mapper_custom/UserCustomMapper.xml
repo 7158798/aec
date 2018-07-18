@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.UserCustomMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.User" extends="com.hengxunda.dao.mapper.UserMapper.BaseResultMap">
+
+  </resultMap>
+  <resultMap id="BaseResultMapPo" type="com.hengxunda.dao.po.UserPo" >
+  <id column="id" property="id" jdbcType="VARCHAR" />
+  <result column="name" property="name" jdbcType="VARCHAR" />
+  <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+  <result column="uid" property="uid" jdbcType="VARCHAR"/>
+  <result column="phone" property="phone" jdbcType="VARCHAR" />
+  <result column="email" property="email" jdbcType="VARCHAR" />
+  <result column="gender" property="gender" jdbcType="INTEGER" />
+  <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+  <result column="status" property="status" jdbcType="INTEGER" />
+  <result column="level" property="level" jdbcType="INTEGER" />
+  <result column="role" property="role" jdbcType="INTEGER" />
+  <result column="password" property="password" jdbcType="VARCHAR" />
+  <result column="salt" property="salt" jdbcType="VARCHAR" />
+  <result column="pay_password" property="payPassword" jdbcType="VARCHAR" />
+  <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+  <result column="login_status" property="loginStatus" jdbcType="INTEGER" />
+  <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  <result column="re_phone" property="recommendPhone" jdbcType="VARCHAR" />
+  <result column="is_shop" property="isShop" jdbcType="INTEGER"/>
+</resultMap>
+  <resultMap id="BaseResultMapForLockUp" type="com.hengxunda.dao.po.web.LockUpPo" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="msc_amount" property="amount" jdbcType="DECIMAL" />
+    <result column="rest_msc_amount" property="restAmount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, name, nick_name, phone, email, gender, avatar, status, level, role, password,
+    salt, pay_password, id_card, login_status, create_user, create_time, update_user,
+    update_time
+  </sql>
+    <sql id="Base_Column_List_Po">
+    a.id, a.name, a.uid, a.nick_name, a.phone, a.email, a.gender, a.avatar, a.status, a.level, a.role, a.password,
+    a.salt, a.pay_password, a.id_card, a.login_status, a.create_user, a.create_time, a.update_user,
+    a.update_time, b.uid re_phone, a.is_shop
+  </sql>
+
+
+
+
+  <select id="getUserLockInfo" resultMap="BaseResultMapForLockUp" parameterType="map">
+    select a.id, a.user_id, b.name, b.phone,a.status, a.type, a.msc_amount, a.rest_msc_amount, a.create_time from t_msc_record a left join t_user b on a.user_id = b.id
+    where a.user_id = #{id,jdbcType = VARCHAR}
+    order by create_time desc, status
+    limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+  </select>
+
+  <select id="countUserLockInfo" resultType="java.lang.Integer" parameterType="java.lang.String">
+    select count(0) from t_msc_record a left join t_user b on a.user_id = b.id
+    where a.user_id = #{id,jdbcType = VARCHAR}
+  </select>
+
+
+  <select id="getUserByPhone" resultMap="BaseResultMap">
+    SELECT * from t_user where phone = #{phone}
+  </select>
+
+    <select id="getUsers" resultMap="BaseResultMapPo" parameterType="map">
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List_Po"/>
+        , c.phone re_phone
+        from t_user a
+        left join t_user_recommend b on a.id = b.referee_id
+        left join t_user c on b.recommend_id = c.id
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="example.orderByClause != null">
+            order by ${example.orderByClause}
+        </if>
+        limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+    </select>
+    <select id="getUsersSelect" resultMap="BaseResultMapPo" parameterType="map">
+        select
+
+    <include refid="Base_Column_List_Po" />
+    from t_user a
+    left join
+    (select distinct a.recommend_id, a.referee_id, b.uid from t_user_recommend a left join  t_user b on a.recommend_id = b.id) b
+    on b.referee_id = a.id
+    where
+    <if test="record.id != null" >
+      a.id = #{record.id,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.name != null" >
+      a.name = #{record.name,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.uid != null" >
+        a.uid = #{record.uid,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.nickName != null" >
+      a.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.phone != null" >
+      a.phone = #{record.phone,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.email != null" >
+      a.email = #{record.email,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.gender != null" >
+      a.gender = #{record.gender,jdbcType=INTEGER} and
+    </if>
+    <if test="record.avatar != null" >
+      a.avatar = #{record.avatar,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.status != null" >
+      a.status = #{record.status,jdbcType=INTEGER} and
+    </if>
+    <if test="record.level != null" >
+      a.level = #{record.level,jdbcType=INTEGER} and
+    </if>
+    <if test="record.role != null" >
+      a.role = #{record.role,jdbcType=INTEGER} and
+    </if>
+    <if test="record.password != null" >
+      a.password = #{record.password,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.salt != null" >
+      a.salt = #{record.salt,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.payPassword != null" >
+      a.pay_password = #{record.payPassword,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.idCard != null" >
+      a.id_card = #{record.idCard,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.loginStatus != null" >
+      a.login_status = #{record.loginStatus,jdbcType=INTEGER} and
+    </if>
+    <if test="record.createUser != null" >
+      a.create_user = #{record.createUser,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.createBeginTime != null" >
+      a.create_time between #{record.createBeginTime,jdbcType=TIMESTAMP} and
+      #{record.createEndTime,jdbcType=TIMESTAMP} and
+    </if>
+    1=1
+    order by a.create_time desc
+    limit #{page.beginNo, jdbcType=INTEGER},#{page.limit, jdbcType=INTEGER}
+  </select>
+  <select id="getUsersForDownload" resultMap="BaseResultMapPo" parameterType="com.hengxunda.dao.po.UserPo" >
+    select
+
+    <include refid="Base_Column_List_Po" />
+    from t_user a
+    left join
+    (select distinct a.recommend_id,a.referee_id, b.uid from t_user_recommend a left join  t_user b on a.recommend_id = b.id) b
+    on b.referee_id = a.id
+    where
+    <if test="record.id != null" >
+      a.id = #{record.id,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.name != null" >
+      a.name = #{record.name,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.nickName != null" >
+      a.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.uid != null" >
+      a.uid = #{record.uid,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.phone != null" >
+      a.phone = #{record.phone,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.email != null" >
+      a.email = #{record.email,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.gender != null" >
+      a.gender = #{record.gender,jdbcType=INTEGER} and
+    </if>
+    <if test="record.avatar != null" >
+      a.avatar = #{record.avatar,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.status != null" >
+      a.status = #{record.status,jdbcType=INTEGER} and
+    </if>
+    <if test="record.level != null" >
+      a.level = #{record.level,jdbcType=INTEGER} and
+    </if>
+    <if test="record.role != null" >
+      a.role = #{record.role,jdbcType=INTEGER} and
+    </if>
+    <if test="record.password != null" >
+      a.password = #{record.password,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.salt != null" >
+      a.salt = #{record.salt,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.payPassword != null" >
+      a.pay_password = #{record.payPassword,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.idCard != null" >
+      a.id_card = #{record.idCard,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.loginStatus != null" >
+      a.login_status = #{record.loginStatus,jdbcType=INTEGER} and
+    </if>
+    <if test="record.createUser != null" >
+      a.create_user = #{record.createUser,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.createBeginTime != null" >
+      a.create_time between #{record.createBeginTime,jdbcType=TIMESTAMP} and
+      #{record.createEndTime,jdbcType=TIMESTAMP} and
+    </if>
+    1=1
+    order by a.create_time desc
+  </select>
+  <select id="countUsersSelect"  parameterType="com.hengxunda.dao.entity.User" resultType="java.lang.Integer">
+    select
+    count(0)
+    from t_user a
+    left join
+    (select distinct a.recommend_id,a.referee_id, b.uid from t_user_recommend a left join  t_user b on a.recommend_id = b.id) b
+    on b.referee_id = a.id
+    where
+    <if test="record.id != null" >
+      a.id = #{record.id,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.name != null" >
+      a.name = #{record.name,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.nickName != null" >
+      a.nick_name = #{record.nickName,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.uid != null" >
+      a.uid = #{record.uid,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.phone != null" >
+      a.phone = #{record.phone,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.email != null" >
+      a.email = #{record.email,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.gender != null" >
+      a.gender = #{record.gender,jdbcType=INTEGER} and
+    </if>
+    <if test="record.avatar != null" >
+      a.avatar = #{record.avatar,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.status != null" >
+      a.status = #{record.status,jdbcType=INTEGER} and
+    </if>
+    <if test="record.level != null" >
+      a.level = #{record.level,jdbcType=INTEGER} and
+    </if>
+    <if test="record.role != null" >
+      a.role = #{record.role,jdbcType=INTEGER} and
+    </if>
+    <if test="record.password != null" >
+      a.password = #{record.password,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.salt != null" >
+      a.salt = #{record.salt,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.payPassword != null" >
+      a.pay_password = #{record.payPassword,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.idCard != null" >
+      a.id_card = #{record.idCard,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.loginStatus != null" >
+      a.login_status = #{record.loginStatus,jdbcType=INTEGER} and
+    </if>
+    <if test="record.createUser != null" >
+      a.create_user = #{record.createUser,jdbcType=VARCHAR} and
+    </if>
+    <if test="record.createBeginTime != null" >
+      a.create_time between #{record.createBeginTime,jdbcType=TIMESTAMP} and
+      #{record.createEndTime,jdbcType=TIMESTAMP} and
+    </if>
+    1=1
+  </select>
+  <update id="frozenUserById" parameterType="java.util.List">
+    update t_user set status = 1 where id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </update>
+  <update id="UnfrozenUserById" parameterType="java.util.List">
+      update t_user set status = 0 where id in
+      <foreach collection="ids" item="id" open="(" close=")" separator=",">
+          #{id}
+      </foreach>
+  </update>
+
+  <update id="batchUpdateUserLevel" parameterType="java.util.List">
+      <foreach collection="list" item="user" separator=";">
+          UPDATE t_user
+             SET  level = #{user.level},
+                  self_achievement = #{user.selfAchievement},
+                  full_achievement = #{user.fullAchievement}
+           WHERE id = #{user.id}
+      </foreach>
+  </update>
+
+  <select id="getParentUserById" resultType="com.hengxunda.dao.entity.User" parameterType="java.lang.String">
+    SELECT tu.*  FROM t_user_recommend tur
+    LEFT JOIN t_user tu ON tu.id = tur.recommend_id
+    WHERE tur.referee_id = #{userId}
+  </select>
+
+  <select id="getUserByUid" resultMap="BaseResultMap">
+    SELECT * from t_user where uid = #{uid}
+  </select>
+
+  <update id="setUserToShop" parameterType="java.lang.String">
+      UPDATE t_user SET is_shop = 1 WHERE id = #{user.id} and is_shop = 0
+  </update>
+
+  <update id="setShopToUser" parameterType="java.lang.String">
+      UPDATE t_user SET is_shop = 0 WHERE id = #{user.id} and is_shop = 1
+  </update>
+
+  <update id="batchUpdateQualifiedNum" parameterType="java.util.Map">
+    <foreach collection="map" item="value" index="userId" separator=";">
+      UPDATE t_user
+      SET  qualified_num = #{value}
+      WHERE id = #{userId}
+    </foreach>
+  </update>
+
+  <select id="getChildUserById" resultType="com.hengxunda.dao.entity.User" parameterType="java.lang.String">
+    SELECT tu.*
+    FROM t_user tu
+    LEFT JOIN t_user_recommend tur ON tu.id = tur.referee_id
+    WHERE tur.recommend_id = #{userId}
+  </select>
+</mapper>

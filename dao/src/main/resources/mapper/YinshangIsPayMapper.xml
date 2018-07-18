@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper.YinshangIsPayMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.YinshangIsPay" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="CNY" property="cny" jdbcType="INTEGER" />
+    <result column="USD" property="usd" jdbcType="INTEGER" />
+    <result column="EUR" property="eur" jdbcType="INTEGER" />
+    <result column="HKD" property="hkd" jdbcType="INTEGER" />
+    <result column="Alipay" property="alipay" jdbcType="INTEGER" />
+    <result column="PayPal" property="paypal" jdbcType="INTEGER" />
+    <result column="Xilian" property="xilian" jdbcType="INTEGER" />
+    <result column="SWIFT" property="swift" jdbcType="INTEGER" />
+    <result column="Weixin" property="weixin" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="upate_user" property="upateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_id, CNY, USD, EUR, HKD, Alipay, PayPal, Xilian, SWIFT, Weixin, create_time, 
+    upate_user, update_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hengxunda.dao.entity.YinshangIsPayExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_yinshang_is_pay
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_yinshang_is_pay
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_yinshang_is_pay
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hengxunda.dao.entity.YinshangIsPayExample" >
+    delete from t_yinshang_is_pay
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hengxunda.dao.entity.YinshangIsPay" >
+    insert into t_yinshang_is_pay (id, user_id, CNY, 
+      USD, EUR, HKD, Alipay, 
+      PayPal, Xilian, SWIFT, 
+      Weixin, create_time, upate_user, 
+      update_time)
+    values (#{id,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{cny,jdbcType=INTEGER}, 
+      #{usd,jdbcType=INTEGER}, #{eur,jdbcType=INTEGER}, #{hkd,jdbcType=INTEGER}, #{alipay,jdbcType=INTEGER}, 
+      #{paypal,jdbcType=INTEGER}, #{xilian,jdbcType=INTEGER}, #{swift,jdbcType=INTEGER}, 
+      #{weixin,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{upateUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hengxunda.dao.entity.YinshangIsPay" >
+    insert into t_yinshang_is_pay
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="cny != null" >
+        CNY,
+      </if>
+      <if test="usd != null" >
+        USD,
+      </if>
+      <if test="eur != null" >
+        EUR,
+      </if>
+      <if test="hkd != null" >
+        HKD,
+      </if>
+      <if test="alipay != null" >
+        Alipay,
+      </if>
+      <if test="paypal != null" >
+        PayPal,
+      </if>
+      <if test="xilian != null" >
+        Xilian,
+      </if>
+      <if test="swift != null" >
+        SWIFT,
+      </if>
+      <if test="weixin != null" >
+        Weixin,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="upateUser != null" >
+        upate_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="cny != null" >
+        #{cny,jdbcType=INTEGER},
+      </if>
+      <if test="usd != null" >
+        #{usd,jdbcType=INTEGER},
+      </if>
+      <if test="eur != null" >
+        #{eur,jdbcType=INTEGER},
+      </if>
+      <if test="hkd != null" >
+        #{hkd,jdbcType=INTEGER},
+      </if>
+      <if test="alipay != null" >
+        #{alipay,jdbcType=INTEGER},
+      </if>
+      <if test="paypal != null" >
+        #{paypal,jdbcType=INTEGER},
+      </if>
+      <if test="xilian != null" >
+        #{xilian,jdbcType=INTEGER},
+      </if>
+      <if test="swift != null" >
+        #{swift,jdbcType=INTEGER},
+      </if>
+      <if test="weixin != null" >
+        #{weixin,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upateUser != null" >
+        #{upateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hengxunda.dao.entity.YinshangIsPayExample" resultType="java.lang.Integer" >
+    select count(*) from t_yinshang_is_pay
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_yinshang_is_pay
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cny != null" >
+        CNY = #{record.cny,jdbcType=INTEGER},
+      </if>
+      <if test="record.usd != null" >
+        USD = #{record.usd,jdbcType=INTEGER},
+      </if>
+      <if test="record.eur != null" >
+        EUR = #{record.eur,jdbcType=INTEGER},
+      </if>
+      <if test="record.hkd != null" >
+        HKD = #{record.hkd,jdbcType=INTEGER},
+      </if>
+      <if test="record.alipay != null" >
+        Alipay = #{record.alipay,jdbcType=INTEGER},
+      </if>
+      <if test="record.paypal != null" >
+        PayPal = #{record.paypal,jdbcType=INTEGER},
+      </if>
+      <if test="record.xilian != null" >
+        Xilian = #{record.xilian,jdbcType=INTEGER},
+      </if>
+      <if test="record.swift != null" >
+        SWIFT = #{record.swift,jdbcType=INTEGER},
+      </if>
+      <if test="record.weixin != null" >
+        Weixin = #{record.weixin,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.upateUser != null" >
+        upate_user = #{record.upateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_yinshang_is_pay
+    set id = #{record.id,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      CNY = #{record.cny,jdbcType=INTEGER},
+      USD = #{record.usd,jdbcType=INTEGER},
+      EUR = #{record.eur,jdbcType=INTEGER},
+      HKD = #{record.hkd,jdbcType=INTEGER},
+      Alipay = #{record.alipay,jdbcType=INTEGER},
+      PayPal = #{record.paypal,jdbcType=INTEGER},
+      Xilian = #{record.xilian,jdbcType=INTEGER},
+      SWIFT = #{record.swift,jdbcType=INTEGER},
+      Weixin = #{record.weixin,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      upate_user = #{record.upateUser,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hengxunda.dao.entity.YinshangIsPay" >
+    update t_yinshang_is_pay
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="cny != null" >
+        CNY = #{cny,jdbcType=INTEGER},
+      </if>
+      <if test="usd != null" >
+        USD = #{usd,jdbcType=INTEGER},
+      </if>
+      <if test="eur != null" >
+        EUR = #{eur,jdbcType=INTEGER},
+      </if>
+      <if test="hkd != null" >
+        HKD = #{hkd,jdbcType=INTEGER},
+      </if>
+      <if test="alipay != null" >
+        Alipay = #{alipay,jdbcType=INTEGER},
+      </if>
+      <if test="paypal != null" >
+        PayPal = #{paypal,jdbcType=INTEGER},
+      </if>
+      <if test="xilian != null" >
+        Xilian = #{xilian,jdbcType=INTEGER},
+      </if>
+      <if test="swift != null" >
+        SWIFT = #{swift,jdbcType=INTEGER},
+      </if>
+      <if test="weixin != null" >
+        Weixin = #{weixin,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upateUser != null" >
+        upate_user = #{upateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hengxunda.dao.entity.YinshangIsPay" >
+    update t_yinshang_is_pay
+    set user_id = #{userId,jdbcType=VARCHAR},
+      CNY = #{cny,jdbcType=INTEGER},
+      USD = #{usd,jdbcType=INTEGER},
+      EUR = #{eur,jdbcType=INTEGER},
+      HKD = #{hkd,jdbcType=INTEGER},
+      Alipay = #{alipay,jdbcType=INTEGER},
+      PayPal = #{paypal,jdbcType=INTEGER},
+      Xilian = #{xilian,jdbcType=INTEGER},
+      SWIFT = #{swift,jdbcType=INTEGER},
+      Weixin = #{weixin,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      upate_user = #{upateUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

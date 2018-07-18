@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.SequenceCustomMapper" >
+    <insert id="insert" parameterType="com.hengxunda.dao.entity.Sequence" >
+        INSERT INTO t_sequence (table_name, seq_key, seq_value)
+        VALUES  (#{tableName}, #{seqKey}, #{seqValue})
+    </insert>
+
+    <select id="countByTableNameAndKey" parameterType="com.hengxunda.dao.entity.Sequence" resultType="java.lang.Integer">
+        SELECT COUNT(0) FROM t_sequence t
+        WHERE t.table_name = #{tableName} AND t.seq_key = #{seqKey}
+    </select>
+
+    <select id="queryByTableNameAndKey" parameterType="com.hengxunda.dao.entity.Sequence" resultType="com.hengxunda.dao.entity.Sequence">
+        SELECT
+            t.id ,
+            t.table_name AS 'tableName',
+            t.seq_key AS 'seqKey',
+            t.seq_value AS 'seqValue'
+        FROM t_sequence t
+        WHERE t.table_name = #{tableName} AND t.seq_key = #{seqKey}
+        FOR UPDATE
+    </select>
+
+    <update id="updateSeqByTableNameAndKey" parameterType="com.hengxunda.dao.entity.Sequence">
+        UPDATE t_sequence SET seq_value = #{seqValue}
+         WHERE table_name = #{tableName} AND seq_key = #{seqKey}
+    </update>
+</mapper>

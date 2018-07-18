@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hengxunda.dao.mapper_custom.YinshangQuantityCustomMapper" >
+  <resultMap id="BaseResultMap" type="com.hengxunda.dao.entity.YinshangQuantity" >
+    <id column="advert_user_id" property="advertUserId" jdbcType="VARCHAR" />
+    <result column="quantity" property="quantity" jdbcType="DECIMAL" />
+  </resultMap>
+
+  <update id="updateYinshangQuantityById">
+    update t_yinshang_quantity set quantity = quantity + #{quantity} where advert_user_id = #{advertUserId}
+  </update>
+
+  <select id="getYinshangQuantityById" resultType="com.hengxunda.dao.entity.YinshangQuantity">
+    select
+      advert_user_id as advertUserId,
+      quantity
+    from t_yinshang_quantity
+    where advert_user_id = #{advertUserId} for update
+  </select>
+
+  <insert id="insertYinshangQuantity">
+    insert into t_yinshang_quantity(advert_user_id,quantity) values (#{advertUserId},#{quantity})
+  </insert>
+</mapper>
